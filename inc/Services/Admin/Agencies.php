@@ -28,8 +28,6 @@ class Agencies implements ServiceInterface
         add_filter('single_template', array($this, 'init_agency_template'));
         add_filter('template_include', array($this, 'archive_template'));
         add_filter('mam-agencies-filtered-posts', array($this, 'filtered_posts'));
-        add_action('acf/init', array($this, 'add_agencies_custom_fields'));
-        add_shortcode('mam-agencies-listing', [$this, 'mam_agencies_listing']);
     }
 
     /**
@@ -123,43 +121,6 @@ class Agencies implements ServiceInterface
         return $template;
     }
 
-    /**
-     * add clients post type custom fields (using ACF Pro)
-     */
-    public function add_agencies_custom_fields()
-    {
-        if (function_exists('acf_add_local_field_group')) {
-
-        }
-    }
-
-
-    /**
-     * [mam-agencies-listing] function
-     * @param $atts array
-     * @return false|string
-     */
-    public function mam_agencies_listing($atts)
-    {
-        global $a;
-        $a = shortcode_atts(array(
-            'type' => 'for-sale'
-        ), $atts);
-
-        $theme_files = array('mam-agencies-listing.php', 'mam/mam-agencies-listing.php');
-        $exists_in_theme = locate_template($theme_files, false);
-
-        ob_start();
-        if ($exists_in_theme != '') {
-            /** @noinspection PhpIncludeInspection */
-            include $exists_in_theme;
-        } else {
-            // nope, load the content
-            /** @noinspection PhpIncludeInspection */
-            include $this->plugin_path . 'templates/mam-agencies-listing.php';
-        }
-        return ob_get_clean();
-    }
 
     /**
      * Get the properties filtered
@@ -168,33 +129,11 @@ class Agencies implements ServiceInterface
      */
     public function filtered_posts($getData)
     {
-        global $a;
-
-        $status = '';
-        $type = 'rental';
-        if (isset($a['type'])) {
-            $status = 'current';
-            if ($a['type'] == 'for-sale') {
-                $type = 'residential';
-            }
-        }
-
-        $meta_query = [];
-        $meta_query['relation'] = 'AND';
-
-        if ($status != '') {
-            $meta_query[] = [
-                'key' => 'status',
-                'value' => $status,
-                'compare' => '='
-            ];
-        }
-
         // args
         $args = array(
             'numberposts' => -1,
-            'post_type' => 'client',
-            'meta_query' => $meta_query
+            'asdasd' => $getData,
+            'post_type' => 'agency'
         );
 
         // query

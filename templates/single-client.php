@@ -1,9 +1,6 @@
-<?php get_header(); ?>
-<main id="content">
-    <div class="container">
-        <?php
-            echo 'test';
-        ?>
-    </div>
-</main>
+<?php
+get_header();
+?>
+
+
 <?php get_footer(); ?>

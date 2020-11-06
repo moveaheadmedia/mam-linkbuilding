@@ -4,6 +4,7 @@
 namespace MAM\Plugin;
 
 
+use MAM\Plugin\Services\Admin\Export;
 use MAM\Plugin\Services\Admin\Import;
 use MAM\Plugin\Services\Admin\Orders;
 use MAM\Plugin\Services\Base\Enqueue;
@@ -12,7 +13,6 @@ use MAM\Plugin\Services\Admin\Sectors;
 use MAM\Plugin\Services\Admin\Editors;
 use MAM\Plugin\Services\Admin\Agencies;
 use MAM\Plugin\Services\Admin\Resources;
-use MAM\Plugin\Services\Admin\Export\Export;
 
 final class Init
 {

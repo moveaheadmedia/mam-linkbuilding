@@ -28,7 +28,7 @@ class Orders implements ServiceInterface
         add_filter('template_include', array($this, 'archive_template'));
         add_filter('mam-orders-filtered-posts', array($this, 'filtered_posts'));
         add_action('acf/init', array($this, 'add_orders_custom_fields'));
-        add_filter('gettext',array($this,'custom_enter_title'));
+        add_filter('gettext', array($this, 'custom_enter_title'));
 
         // Admin table
         add_filter('manage_order_posts_columns', array($this, 'set_custom_edit_order_columns'));
@@ -137,6 +137,545 @@ class Orders implements ServiceInterface
     public function add_orders_custom_fields()
     {
         if (function_exists('acf_add_local_field_group')) {
+            acf_add_local_field_group(array(
+                'key' => 'group_5fa3777e3766b',
+                'title' => 'Order Info',
+                'fields' => array(
+                    array(
+                        'key' => 'field_5fa377873f656',
+                        'label' => 'Client',
+                        'name' => 'client',
+                        'type' => 'post_object',
+                        'instructions' => '',
+                        'required' => 1,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'post_type' => array(
+                            0 => 'client',
+                        ),
+                        'taxonomy' => '',
+                        'allow_null' => 0,
+                        'multiple' => 0,
+                        'return_format' => 'id',
+                        'ui' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5fa377b93f658',
+                        'label' => 'Anchor Text',
+                        'name' => 'anchor_text',
+                        'type' => 'text',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'maxlength' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa377f43f659',
+                        'label' => 'Target URL',
+                        'name' => 'target_url',
+                        'type' => 'url',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa377a43f657',
+                        'label' => 'Resource',
+                        'name' => 'resource',
+                        'type' => 'post_object',
+                        'instructions' => '',
+                        'required' => 1,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'post_type' => array(
+                            0 => 'resources',
+                        ),
+                        'taxonomy' => '',
+                        'allow_null' => 0,
+                        'multiple' => 0,
+                        'return_format' => 'id',
+                        'ui' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5fa3780e3f65b',
+                        'label' => 'Notes',
+                        'name' => 'notes',
+                        'type' => 'text',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'maxlength' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa388c994097',
+                        'label' => 'Sent To Writers',
+                        'name' => 'sent_to_writers',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'F j, Y',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5fa38b4f034eb',
+                        'label' => 'Currency',
+                        'name' => 'currency',
+                        'type' => 'select',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'choices' => array(
+                            'USD' => 'USD',
+                            'GBP' => 'GBP',
+                            'AUD' => 'AUD',
+                            'EUR' => 'EUR',
+                            '=========' => '=========',
+                            'AED' => 'AED',
+                            'AFN' => 'AFN',
+                            'ALL' => 'ALL',
+                            'AMD' => 'AMD',
+                            'ANG' => 'ANG',
+                            'AOA' => 'AOA',
+                            'ARS' => 'ARS',
+                            'AWG' => 'AWG',
+                            'AZN' => 'AZN',
+                            'BAM' => 'BAM',
+                            'BBD' => 'BBD',
+                            'BDT' => 'BDT',
+                            'BGN' => 'BGN',
+                            'BHD' => 'BHD',
+                            'BIF' => 'BIF',
+                            'BMD' => 'BMD',
+                            'BND' => 'BND',
+                            'BOB' => 'BOB',
+                            'BOV' => 'BOV',
+                            'BRL' => 'BRL',
+                            'BSD' => 'BSD',
+                            'BTN' => 'BTN',
+                            'BWP' => 'BWP',
+                            'BYN' => 'BYN',
+                            'BZD' => 'BZD',
+                            'CAD' => 'CAD',
+                            'CDF' => 'CDF',
+                            'CHE' => 'CHE',
+                            'CHF' => 'CHF',
+                            'CHW' => 'CHW',
+                            'CLF' => 'CLF',
+                            'CLP' => 'CLP',
+                            'CNY' => 'CNY',
+                            'COP' => 'COP',
+                            'COU' => 'COU',
+                            'CRC' => 'CRC',
+                            'CUC' => 'CUC',
+                            'CUP' => 'CUP',
+                            'CVE' => 'CVE',
+                            'CZK' => 'CZK',
+                            'DJF' => 'DJF',
+                            'DKK' => 'DKK',
+                            'DOP' => 'DOP',
+                            'DZD' => 'DZD',
+                            'EGP' => 'EGP',
+                            'ERN' => 'ERN',
+                            'ETB' => 'ETB',
+                            'FJD' => 'FJD',
+                            'FKP' => 'FKP',
+                            'GEL' => 'GEL',
+                            'GHS' => 'GHS',
+                            'GIP' => 'GIP',
+                            'GMD' => 'GMD',
+                            'GNF' => 'GNF',
+                            'GTQ' => 'GTQ',
+                            'GYD' => 'GYD',
+                            'HKD' => 'HKD',
+                            'HNL' => 'HNL',
+                            'HRK' => 'HRK',
+                            'HTG' => 'HTG',
+                            'HUF' => 'HUF',
+                            'IDR' => 'IDR',
+                            'ILS' => 'ILS',
+                            'INR' => 'INR',
+                            'IQD' => 'IQD',
+                            'IRR' => 'IRR',
+                            'ISK' => 'ISK',
+                            'JMD' => 'JMD',
+                            'JOD' => 'JOD',
+                            'JPY' => 'JPY',
+                            'KES' => 'KES',
+                            'KGS' => 'KGS',
+                            'KHR' => 'KHR',
+                            'KMF' => 'KMF',
+                            'KPW' => 'KPW',
+                            'KRW' => 'KRW',
+                            'KWD' => 'KWD',
+                            'KYD' => 'KYD',
+                            'KZT' => 'KZT',
+                            'LAK' => 'LAK',
+                            'LBP' => 'LBP',
+                            'LKR' => 'LKR',
+                            'LRD' => 'LRD',
+                            'LSL' => 'LSL',
+                            'LYD' => 'LYD',
+                            'MAD' => 'MAD',
+                            'MDL' => 'MDL',
+                            'MGA' => 'MGA',
+                            'MKD' => 'MKD',
+                            'MMK' => 'MMK',
+                            'MNT' => 'MNT',
+                            'MOP' => 'MOP',
+                            'MRU[11]' => 'MRU[11]',
+                            'MUR' => 'MUR',
+                            'MVR' => 'MVR',
+                            'MWK' => 'MWK',
+                            'MXN' => 'MXN',
+                            'MXV' => 'MXV',
+                            'MYR' => 'MYR',
+                            'MZN' => 'MZN',
+                            'NAD' => 'NAD',
+                            'NGN' => 'NGN',
+                            'NIO' => 'NIO',
+                            'NOK' => 'NOK',
+                            'NPR' => 'NPR',
+                            'NZD' => 'NZD',
+                            'OMR' => 'OMR',
+                            'PAB' => 'PAB',
+                            'PEN' => 'PEN',
+                            'PGK' => 'PGK',
+                            'PHP' => 'PHP',
+                            'PKR' => 'PKR',
+                            'PLN' => 'PLN',
+                            'PYG' => 'PYG',
+                            'QAR' => 'QAR',
+                            'RON' => 'RON',
+                            'RSD' => 'RSD',
+                            'RUB' => 'RUB',
+                            'RWF' => 'RWF',
+                            'SAR' => 'SAR',
+                            'SBD' => 'SBD',
+                            'SCR' => 'SCR',
+                            'SDG' => 'SDG',
+                            'SEK' => 'SEK',
+                            'SGD' => 'SGD',
+                            'SHP' => 'SHP',
+                            'SLL' => 'SLL',
+                            'SOS' => 'SOS',
+                            'SRD' => 'SRD',
+                            'SSP' => 'SSP',
+                            'STN[13]' => 'STN[13]',
+                            'SVC' => 'SVC',
+                            'SYP' => 'SYP',
+                            'SZL' => 'SZL',
+                            'THB' => 'THB',
+                            'TJS' => 'TJS',
+                            'TMT' => 'TMT',
+                            'TND' => 'TND',
+                            'TOP' => 'TOP',
+                            'TRY' => 'TRY',
+                            'TTD' => 'TTD',
+                            'TWD' => 'TWD',
+                            'TZS' => 'TZS',
+                            'UAH' => 'UAH',
+                            'UGX' => 'UGX',
+                            'USN' => 'USN',
+                            'UYI' => 'UYI',
+                            'UYU' => 'UYU',
+                            'UYW' => 'UYW',
+                            'UZS' => 'UZS',
+                            'VES' => 'VES',
+                            'VND' => 'VND',
+                            'VUV' => 'VUV',
+                            'WST' => 'WST',
+                            'XAF' => 'XAF',
+                            'XAG' => 'XAG',
+                            'XAU' => 'XAU',
+                            'XBA' => 'XBA',
+                            'XBB' => 'XBB',
+                            'XBC' => 'XBC',
+                            'XBD' => 'XBD',
+                            'XCD' => 'XCD',
+                            'XDR' => 'XDR',
+                            'XOF' => 'XOF',
+                            'XPD' => 'XPD',
+                            'XPF' => 'XPF',
+                            'XPT' => 'XPT',
+                            'XSU' => 'XSU',
+                            'XTS' => 'XTS',
+                            'XUA' => 'XUA',
+                            'XXX' => 'XXX',
+                            'YER' => 'YER',
+                            'ZAR' => 'ZAR',
+                            'ZMW' => 'ZMW',
+                            'ZWL' => 'ZWL',
+                        ),
+                        'default_value' => false,
+                        'allow_null' => 0,
+                        'multiple' => 0,
+                        'ui' => 0,
+                        'return_format' => 'value',
+                        'ajax' => 0,
+                        'placeholder' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa38b67034ec',
+                        'label' => 'Price',
+                        'name' => 'price',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa38bdf034ed',
+                        'label' => 'DA',
+                        'name' => 'da',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa38bed034ee',
+                        'label' => 'RD',
+                        'name' => 'rd',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa3895294098',
+                        'label' => 'Articles Sent To The Sites',
+                        'name' => 'articles_sent_to_the_sites',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'F j, Y',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5fa3896594099',
+                        'label' => 'Live Link Received',
+                        'name' => 'live_link_received',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'F j, Y',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5fa38c03034ef',
+                        'label' => 'Live Link',
+                        'name' => 'live_link',
+                        'type' => 'url',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa389779409a',
+                        'label' => 'We Paid',
+                        'name' => 'we_paid',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'F j, Y',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5fa38c2b034f0',
+                        'label' => 'Dollar Price',
+                        'name' => 'dollar_price',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa38c33034f1',
+                        'label' => 'Baht Price',
+                        'name' => 'baht_price',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5fa38a1d92332',
+                        'label' => 'Status',
+                        'name' => 'status',
+                        'type' => 'select',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'choices' => array(
+                            'Ongoing' => 'Ongoing',
+                            'Refused' => 'Refused',
+                            'Completed' => 'Completed',
+                        ),
+                        'default_value' => false,
+                        'allow_null' => 0,
+                        'multiple' => 0,
+                        'ui' => 0,
+                        'return_format' => 'value',
+                        'ajax' => 0,
+                        'placeholder' => '',
+                    ),
+                ),
+                'location' => array(
+                    array(
+                        array(
+                            'param' => 'post_type',
+                            'operator' => '==',
+                            'value' => 'order',
+                        ),
+                    ),
+                ),
+                'menu_order' => 0,
+                'position' => 'normal',
+                'style' => 'default',
+                'label_placement' => 'top',
+                'instruction_placement' => 'label',
+                'hide_on_screen' => '',
+                'active' => true,
+                'description' => '',
+            ));
 
         }
     }
@@ -144,11 +683,12 @@ class Orders implements ServiceInterface
     /**
      * Change Add Title Text
      */
-    function custom_enter_title( $input ) {
+    function custom_enter_title($input)
+    {
 
         global $post_type;
 
-        if( is_admin() && 'Add title' == $input && 'order' == $post_type )
+        if (is_admin() && 'Add title' == $input && 'order' == $post_type)
             return 'Order Number';
 
         return $input;
@@ -190,7 +730,7 @@ class Orders implements ServiceInterface
                 $client_name = get_the_title($client);
                 $client_url = get_the_permalink($client);
                 if (is_string($client_name))
-                    echo '<a href="'.$client_url.'" target="_blank">'.$client_name.'</a>';
+                    echo '<a href="' . $client_url . '" target="_blank">' . $client_name . '</a>';
                 else
                     _e('Unable to get client');
                 break;
@@ -213,7 +753,7 @@ class Orders implements ServiceInterface
                 $resource_name = get_the_title($resource);
                 $resource_url = get_the_permalink($resource);
                 if (is_string($resource_name))
-                    echo '<a href="'.$resource_url.'" target="_blank">'.$resource_name.'</a>';
+                    echo '<a href="' . $resource_url . '" target="_blank">' . $resource_name . '</a>';
                 else
                     _e('Unable to get resource');
                 break;
@@ -232,15 +772,15 @@ class Orders implements ServiceInterface
                     _e('-');
                 break;
             case 'price' :
-                $price = get_field('price',  $post_id);
-                $currency = get_field('currency',  $post_id);
-                if(!$currency){
+                $price = get_field('price', $post_id);
+                $currency = get_field('currency', $post_id);
+                if (!$currency) {
                     $currency = 'USD';
                 }
-                if(is_string($price)){
+                if (is_string($price)) {
                     echo $price . ' ' . $currency;
-                }else{
-                    _e( 'Unable to get Original Price' );
+                } else {
+                    _e('Unable to get Original Price');
                 }
                 break;
             case 'da' :
@@ -267,7 +807,7 @@ class Orders implements ServiceInterface
             case 'live_link_received' :
                 $live_link_received = get_field('live_link_received', $post_id);
                 $live_link = get_field('live_link', $post_id);
-                $live_link_received_string = '<a href="'.$live_link.'" target="_blank">'.$live_link_received.'</a>';
+                $live_link_received_string = '<a href="' . $live_link . '" target="_blank">' . $live_link_received . '</a>';
                 if (is_string($live_link_received_string))
                     echo $live_link_received_string;
                 else
@@ -278,13 +818,13 @@ class Orders implements ServiceInterface
                 $usd = get_field('dollar_price', $post_id);
                 $thb = get_field('baht_price', $post_id);
                 $prices = '';
-                if(is_string($usd)){
+                if (is_string($usd)) {
                     $prices = $usd;
-                    if(is_string($thb)){
+                    if (is_string($thb)) {
                         $prices = $usd . ' / ' . $thb;
                     }
-                }else{
-                    if(is_string($thb)){
+                } else {
+                    if (is_string($thb)) {
                         $prices = $thb;
                     }
                 }

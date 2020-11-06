@@ -29,7 +29,6 @@ class Clients implements ServiceInterface
         add_filter('template_include', array($this, 'archive_template'));
         add_filter('mam-clients-filtered-posts', array($this, 'filtered_posts'));
         add_action('acf/init', array($this, 'add_clients_custom_fields'));
-        add_shortcode('mam-clients-listing', [$this, 'mam_clients_listing']);
 
         // Admin table
         add_filter('manage_client_posts_columns', array($this, 'set_custom_edit_client_columns'));
@@ -177,36 +176,69 @@ class Clients implements ServiceInterface
     public function add_clients_custom_fields()
     {
         if (function_exists('acf_add_local_field_group')) {
+            acf_add_local_field_group(array(
+                'key' => 'group_5fa35633daba0',
+                'title' => 'Client Details',
+                'fields' => array(
+                    array(
+                        'key' => 'field_5fa3563dd291f',
+                        'label' => 'Agency',
+                        'name' => 'agency',
+                        'type' => 'post_object',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'post_type' => array(
+                            0 => 'agency',
+                        ),
+                        'taxonomy' => '',
+                        'allow_null' => 0,
+                        'multiple' => 0,
+                        'return_format' => 'id',
+                        'ui' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5fa35f9dc5586',
+                        'label' => 'Website',
+                        'name' => 'website',
+                        'type' => 'url',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                    ),
+                ),
+                'location' => array(
+                    array(
+                        array(
+                            'param' => 'post_type',
+                            'operator' => '==',
+                            'value' => 'client',
+                        ),
+                    ),
+                ),
+                'menu_order' => 0,
+                'position' => 'normal',
+                'style' => 'default',
+                'label_placement' => 'top',
+                'instruction_placement' => 'label',
+                'hide_on_screen' => '',
+                'active' => true,
+                'description' => '',
+            ));
 
         }
-    }
-
-
-    /**
-     * [mam-clients-listing] function
-     * @param $atts array
-     * @return false|string
-     */
-    public function mam_clients_listing($atts)
-    {
-        global $a;
-        $a = shortcode_atts(array(
-            'type' => 'for-sale'
-        ), $atts);
-
-        $theme_files = array('mam-clients-listing.php', 'mam/mam-clients-listing.php');
-        $exists_in_theme = locate_template($theme_files, false);
-
-        ob_start();
-        if ($exists_in_theme != '') {
-            /** @noinspection PhpIncludeInspection */
-            include $exists_in_theme;
-        } else {
-            // nope, load the content
-            /** @noinspection PhpIncludeInspection */
-            include $this->plugin_path . 'templates/mam-clients-listing.php';
-        }
-        return ob_get_clean();
     }
 
     /**
@@ -216,33 +248,11 @@ class Clients implements ServiceInterface
      */
     public function filtered_posts($getData)
     {
-        global $a;
-
-        $status = '';
-        $type = 'rental';
-        if (isset($a['type'])) {
-            $status = 'current';
-            if ($a['type'] == 'for-sale') {
-                $type = 'residential';
-            }
-        }
-
-        $meta_query = [];
-        $meta_query['relation'] = 'AND';
-
-        if ($status != '') {
-            $meta_query[] = [
-                'key' => 'status',
-                'value' => $status,
-                'compare' => '='
-            ];
-        }
-
         // args
         $args = array(
             'numberposts' => -1,
             'post_type' => 'client',
-            'meta_query' => $meta_query
+            'testasd' => $getData,
         );
 
         // query
