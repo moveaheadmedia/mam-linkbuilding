@@ -243,16 +243,27 @@ class Clients implements ServiceInterface
 
     /**
      * Get the properties filtered
-     * @param $getData array
+     * @param $filters array
      * @return WP_Query
      */
-    public function filtered_posts($getData)
+    public function filtered_posts($filters)
     {
+        $meta_query = [];
+        $meta_query['relation'] = 'AND';
+
+        if ($filters['agency'] != '') {
+            $meta_query[] = [
+                'key' => 'agency',
+                'value' => $filters['agency'],
+                'compare' => '='
+            ];
+        }
+
         // args
         $args = array(
             'numberposts' => -1,
             'post_type' => 'client',
-            'testasd' => $getData,
+            'meta_query' => $meta_query
         );
 
         // query

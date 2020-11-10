@@ -199,12 +199,31 @@ class Orders implements ServiceInterface
                         'placeholder' => '',
                     ),
                     array(
+                        'key' => 'field_5fa377b93f8658',
+                        'label' => 'Niche',
+                        'name' => 'niche',
+                        'type' => 'text',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'maxlength' => '',
+                    ),
+                    array(
                         'key' => 'field_5fa377a43f657',
                         'label' => 'Resource',
                         'name' => 'resource',
                         'type' => 'post_object',
                         'instructions' => '',
-                        'required' => 1,
+                        'required' => 0,
                         'conditional_logic' => 0,
                         'wrapper' => array(
                             'width' => '',
@@ -706,6 +725,7 @@ class Orders implements ServiceInterface
         $columns['client'] = __('Client');
         $columns['text'] = __('Anchor Text');
         $columns['target'] = __('Target URL');
+        $columns['niche'] = __('Niche');
         $columns['resource'] = __('Resource');
         $columns['notes'] = __('Notes');
         $columns['sent_to_writers'] = __('Writers');
@@ -736,37 +756,44 @@ class Orders implements ServiceInterface
                 break;
             case 'text' :
                 $anchor_text = get_field('anchor_text', $post_id);
-                if (is_string($anchor_text))
+                if (($anchor_text))
                     echo $anchor_text;
                 else
-                    _e('Unable to get anchor text');
+                    _e('-');
                 break;
             case 'target' :
                 $target_url = get_field('target_url', $post_id);
-                if (is_string($target_url))
+                if (($target_url))
                     echo $target_url;
                 else
-                    _e('Unable to get target URL');
+                    _e('-');
+                break;
+            case 'niche' :
+                $niche = get_field('niche', $post_id);
+                if (($niche))
+                    echo $niche;
+                else
+                    _e('-');
                 break;
             case 'resource' :
                 $resource = get_field('resource', $post_id);
                 $resource_name = get_the_title($resource);
                 $resource_url = get_the_permalink($resource);
-                if (is_string($resource_name))
+                if (($resource))
                     echo '<a href="' . $resource_url . '" target="_blank">' . $resource_name . '</a>';
                 else
-                    _e('Unable to get resource');
+                    echo '-';
                 break;
             case 'notes' :
                 $notes = get_field('notes', $post_id);
-                if (is_string($notes))
+                if (($notes))
                     echo $notes;
                 else
-                    _e('Unable to get notes');
+                    _e('-');
                 break;
             case 'sent_to_writers' :
                 $sent_to_writers = get_field('sent_to_writers', $post_id);
-                if (is_string($sent_to_writers))
+                if (($sent_to_writers))
                     echo $sent_to_writers;
                 else
                     _e('-');
@@ -777,29 +804,29 @@ class Orders implements ServiceInterface
                 if (!$currency) {
                     $currency = 'USD';
                 }
-                if (is_string($price)) {
+                if (($price)) {
                     echo $price . ' ' . $currency;
                 } else {
-                    _e('Unable to get Original Price');
+                    _e('-');
                 }
                 break;
             case 'da' :
                 $da = get_field('da', $post_id);
-                if (is_string($da))
+                if (($da))
                     echo $da;
                 else
                     _e('-');
                 break;
             case 'rd' :
                 $rd = get_field('rd', $post_id);
-                if (is_string($rd))
+                if (($rd))
                     echo $rd;
                 else
                     _e('-');
                 break;
             case 'articles_sent_to_the_sites' :
                 $articles_sent_to_the_sites = get_field('articles_sent_to_the_sites', $post_id);
-                if (is_string($articles_sent_to_the_sites))
+                if (($articles_sent_to_the_sites))
                     echo $articles_sent_to_the_sites;
                 else
                     _e('-');
@@ -808,7 +835,7 @@ class Orders implements ServiceInterface
                 $live_link_received = get_field('live_link_received', $post_id);
                 $live_link = get_field('live_link', $post_id);
                 $live_link_received_string = '<a href="' . $live_link . '" target="_blank">' . $live_link_received . '</a>';
-                if (is_string($live_link_received_string))
+                if (($live_link_received))
                     echo $live_link_received_string;
                 else
                     _e('-');
@@ -818,7 +845,7 @@ class Orders implements ServiceInterface
                 $usd = get_field('dollar_price', $post_id);
                 $thb = get_field('baht_price', $post_id);
                 $prices = '';
-                if (is_string($usd)) {
+                if (($we_paid)) {
                     $prices = $usd;
                     if (is_string($thb)) {
                         $prices = $usd . ' / ' . $thb;
@@ -828,17 +855,17 @@ class Orders implements ServiceInterface
                         $prices = $thb;
                     }
                 }
-                if (is_string($we_paid))
+                if (($we_paid))
                     echo $we_paid . '<br />' . $prices;
                 else
                     _e('-');
                 break;
             case 'status' :
                 $status = get_field('status', $post_id);
-                if (is_string($status))
+                if (($status))
                     echo $status;
                 else
-                    _e('Unable to get status');
+                    _e('-');
                 break;
         }
     }
@@ -851,6 +878,7 @@ class Orders implements ServiceInterface
         $columns['client'] = 'client';
         $columns['text'] = 'text';
         $columns['target'] = 'target';
+        $columns['niche'] = 'niche';
         $columns['resource'] = 'resource';
         $columns['notes'] = 'notes';
         $columns['sent_to_writers'] = 'sent_to_writers';
@@ -868,17 +896,120 @@ class Orders implements ServiceInterface
 
     /**
      * Get the properties filtered
+     * @param $filters array
      * @return WP_Query
      */
-    public function filtered_posts()
+    public function filtered_posts($filters)
     {
+        $meta_query = [];
+        $meta_query['relation'] = 'AND';
+
+        if ($filters['client'] != '') {
+            $meta_query[] = [
+                'key' => 'client',
+                'value' => $filters['client'],
+                'compare' => '='
+            ];
+        }
+
+
+        if (isset($filters['agency'])) {
+            /**
+             * @var $clients WP_Query
+             */
+            $clients = apply_filters('mam-clients-filtered-posts', $filters);
+            $clientsIDs = array();
+            if ($clients->have_posts()) {
+                while ($clients->have_posts()) {
+                    $clients->the_post();
+                    $clientsIDs[] = get_the_ID();
+                }
+            }
+            if(empty($clientsIDs)){
+                $clientsIDs[] = 99999999;
+            }
+            $meta_query[] = [
+                'key' => 'client',
+                'value' => $clientsIDs,
+                'compare' => 'IN',
+            ];
+        }
+
         // args
         $args = array(
             'numberposts' => -1,
-            'post_type' => 'order'
+            'post_type' => 'order',
+            'meta_query' => $meta_query
         );
 
         // query
         return new WP_Query($args);
+    }
+
+    /**
+     * update the resource custom fields
+     * @param $orderID int the order id
+     * @param $resourceID int the resource id
+     * @param $clientID int the client id
+     * @param $orderData array the custom fields data
+     */
+    public static function update_order($orderID, $resourceID, $clientID, $orderData)
+    {
+
+        update_field('client', $clientID, $orderID);
+        update_field('resource', $resourceID, $orderID);
+
+        if (isset($orderData['Anchor Text'])) {
+            update_field('anchor_text', $orderData['Anchor Text'], $orderID);
+        }
+        if (isset($orderData['Target URL'])) {
+            update_field('target_url', $orderData['Target URL'], $orderID);
+        }
+        if (isset($orderData['Notes'])) {
+            update_field('notes', $orderData['Notes'], $orderID);
+        }
+        if (isset($orderData['Niche'])) {
+            update_field('niche', $orderData['Niche'], $orderID);
+        }
+        if (isset($orderData['Sent To Writers'])) {
+            update_field('sent_to_writers', $orderData['Sent To Writers'], $orderID);
+        }
+        if (isset($orderData['Currency'])) {
+            update_field('currency', $orderData['Currency'], $orderID);
+        }
+        if (isset($orderData['Price'])) {
+            update_field('price', $orderData['Price'], $orderID);
+        }
+        if (isset($orderData['DA'])) {
+            update_field('da', $orderData['DA'], $orderID);
+        }
+        if (isset($orderData['RD'])) {
+            update_field('rd', $orderData['RD'], $orderID);
+        }
+        if (isset($orderData['Article sent to the site'])) {
+            update_field('articles_sent_to_the_sites', $orderData['Article sent to the site'], $orderID);
+        }
+        if (isset($orderData['Live Link Received'])) {
+            update_field('live_link_received', $orderData['Live Link Received'], $orderID);
+        }
+        if (isset($orderData['Live Link'])) {
+            update_field('live_link', $orderData['Live Link'], $orderID);
+        }
+        if (isset($orderData['Paid'])) {
+            update_field('we_paid', $orderData['Paid'], $orderID);
+        }
+        if (isset($orderData['USD Price'])) {
+            update_field('dollar_price', $orderData['USD Price'], $orderID);
+        }
+        if (isset($orderData['THB Price'])) {
+            update_field('baht_price', $orderData['THB Price'], $orderID);
+        }
+        if (isset($orderData['Status'])) {
+            update_field('status', $orderData['Status'], $orderID);
+        }
+        if (isset($orderData['Sectors'])) {
+            $sectors = explode(', ', $orderData['Sectors']);
+            wp_set_post_terms($orderID, $sectors, 'sector');
+        }
     }
 }

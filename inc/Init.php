@@ -12,6 +12,7 @@ use MAM\Plugin\Services\Admin\Clients;
 use MAM\Plugin\Services\Admin\Sectors;
 use MAM\Plugin\Services\Admin\Editors;
 use MAM\Plugin\Services\Admin\Agencies;
+use MAM\Plugin\Services\Admin\AddOrder;
 use MAM\Plugin\Services\Admin\Resources;
 
 final class Init
@@ -31,6 +32,7 @@ final class Init
             Sectors::class,
             Editors::class,
             Agencies::class,
+            AddOrder::class,
             Resources::class
         ];
     }

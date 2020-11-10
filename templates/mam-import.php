@@ -1,4 +1,6 @@
-<?php get_header(); ?>
+<?php use MAM\Plugin\Services\Admin\Orders;
+
+get_header(); ?>
 <main id="content">
     <div class="container">
         <?php
@@ -27,7 +29,8 @@
         $mam_new_agency = array();
         $mam_existing_agency = array();
 
-
+        // mamdevsite auth
+        $mam_file = str_replace('https://mamdevsite.com/', 'https://moveahead:mam@mamdev@mamdevsite.com/', $mam_file);
         // check if the file exist then convert it to array
         if (url_exists($mam_file)) {
             $mam_csv = array_map('str_getcsv', file($mam_file));
@@ -160,22 +163,23 @@
                             'Agency' => $row[3],
                             'Anchor Text' => $row[4],
                             'Target URL' => $row[5],
-                            'Resource URL' => $row[6],
-                            'Resource Email' => $row[7],
-                            'DA' => $row[8],
-                            'RD' => $row[9],
-                            'Notes' => $row[10],
-                            'Sent To Writers' => $row[11],
-                            'Currency' => $row[12],
-                            'Price' => $row[13],
-                            'Article sent to the site' => $row[14],
-                            'Live Link Received' => $row[15],
-                            'Live Link' => $row[16],
-                            'Paid' => $row[17],
-                            'USD Price' => $row[18],
-                            'THB Price' => $row[19],
-                            'Status' => $row[20],
-                            'Sectors' => $row[21]
+                            'Niche' => $row[6],
+                            'Resource URL' => $row[7],
+                            'Resource Email' => $row[8],
+                            'DA' => $row[9],
+                            'RD' => $row[10],
+                            'Notes' => $row[11],
+                            'Sent To Writers' => $row[12],
+                            'Currency' => $row[13],
+                            'Price' => $row[14],
+                            'Article sent to the site' => $row[15],
+                            'Live Link Received' => $row[16],
+                            'Live Link' => $row[17],
+                            'Paid' => $row[18],
+                            'USD Price' => $row[19],
+                            'THB Price' => $row[20],
+                            'Status' => $row[21],
+                            'Sectors' => $row[22]
                         );
                         $agencyID = post_exists($orderData['Agency'], '', '', 'agency');
                         if (!$agencyID) {
@@ -188,106 +192,54 @@
 
                         $clientID = post_exists($orderData['Client Name'], '', '', 'client');
                         if ($clientID) {
-                            update_client($clientID, $agencyID);
+                            update_client($clientID, $agencyID, $orderData);
                         } else {
                             $clientID = wp_insert_post(array(
-                                'post_title' => $orderData['Agency'],
+                                'post_title' => $orderData['Client Name'],
                                 'post_type' => 'client',
                                 'post_status' => 'publish',
                             ));
-                            update_client($clientID, $agencyID);
+                            update_client($clientID, $agencyID, $orderData);
                         }
-
-                        $resourceID = post_exists($orderData['Resource URL'], '', '', 'resources');
-                        if (!$resourceID) {
-                            $resourceID = wp_insert_post(array(
-                                'post_title' => $orderData['Resource URL'],
-                                'post_type' => 'resources',
-                                'post_status' => 'publish',
-                            ));
-                            update_resourceOrder($resourceID, $orderData);
+                        $resourceID = '';
+                        if($orderData['Resource URL'] != ''){
+                            $resourceID = post_exists($orderData['Resource URL'], '', '', 'resources');
+                            if (!$resourceID) {
+                                $resourceID = wp_insert_post(array(
+                                    'post_title' => $orderData['Resource URL'],
+                                    'post_type' => 'resources',
+                                    'post_status' => 'publish',
+                                ));
+                                update_resourceOrder($resourceID, $orderData);
+                            }
                         }
 
                         $orderID = post_exists($orderData['ID'], '', '', 'order');
                         if ($orderID) {
-                            update_order($orderID, $resourceID, $clientID, $orderData);
+                            Orders::update_order($orderID, $resourceID, $clientID, $orderData);
                         } else {
                             $resourceID = wp_insert_post(array(
-                                'post_title' => $orderData['Resource URL'],
+                                'post_title' => $orderData['ID'],
                                 'post_type' => 'order',
                                 'post_status' => 'publish',
                             ));
-                            update_order($orderID, $resourceID, $clientID, $orderData);
+                            Orders::update_order($orderID, $resourceID, $clientID, $orderData);
                         }
 
                         $count = $count + 1;
                     }
-                    echo '<h3>Imported Resources: (' . ($count-1). ')</h3>';
+                    echo '<h3>Imported Orders: (' . ($count-1). ')</h3>';
                 }
             }
         }
 
-        function update_order($orderID, $resourceID, $clientID, $orderData)
-        {
-
-            update_field('client', $clientID, $orderID);
-            update_field('resource', $resourceID, $orderID);
-
-            if (isset($orderData['Anchor Text'])) {
-                update_field('anchor_text', $orderData['Anchor Text'], $orderID);
-            }
-            if (isset($orderData['Target URL'])) {
-                update_field('target_url', $orderData['Target URL'], $orderID);
-            }
-            if (isset($orderData['Notes'])) {
-                update_field('notes', $orderData['Notes'], $orderID);
-            }
-            if (isset($orderData['Sent To Writers'])) {
-                update_field('sent_to_writers', $orderData['Sent To Writers'], $orderID);
-            }
-            if (isset($orderData['Currency'])) {
-                update_field('currency', $orderData['Currency'], $orderID);
-            }
-            if (isset($orderData['Price'])) {
-                update_field('price', $orderData['Price'], $orderID);
-            }
-            if (isset($orderData['DA'])) {
-                update_field('da', $orderData['DA'], $orderID);
-            }
-            if (isset($orderData['RD'])) {
-                update_field('rd', $orderData['RD'], $orderID);
-            }
-            if (isset($orderData['Article sent to the site'])) {
-                update_field('articles_sent_to_the_sites', $orderData['Article sent to the site'], $orderID);
-            }
-            if (isset($orderData['Live Link Received'])) {
-                update_field('live_link_received', $orderData['Live Link Received'], $orderID);
-            }
-            if (isset($orderData['Live Link'])) {
-                update_field('live_link', $orderData['Live Link'], $orderID);
-            }
-            if (isset($orderData['Paid'])) {
-                update_field('we_paid', $orderData['Paid'], $orderID);
-            }
-            if (isset($orderData['USD Price'])) {
-                update_field('dollar_price', $orderData['USD Price'], $orderID);
-            }
-            if (isset($orderData['THB Price'])) {
-                update_field('baht_price', $orderData['THB Price'], $orderID);
-            }
-            if (isset($orderData['Status'])) {
-                update_field('status', $orderData['Status'], $orderID);
-            }
-            if (isset($orderData['Sectors'])) {
-                $sectors = explode(', ', $orderData['Sectors']);
-                wp_set_post_terms($orderID, $sectors, 'sector');
-            }
-        }
-
-        function update_client($clientID, $agencyID)
+        function update_client($clientID, $agencyID, $orderData)
         {
             if (isset($agencyID)) {
                 update_field('agency', $agencyID, $clientID);
+            }
+            if (isset($orderData['Client Website'])) {
+                update_field('website', $orderData['Client Website'], $clientID);
             }
         }
 
@@ -377,7 +329,7 @@
             if ($headers === $resourceHeader) {
                 return 'Resources';
             }
-            $ordersHeader = array('ID', 'Client Name', 'Client Website', 'Agency', 'Anchor Text', 'Target URL', 'Resource URL', 'Resource Email', 'DA', 'RD',
+            $ordersHeader = array('ID', 'Client Name', 'Client Website', 'Agency', 'Anchor Text', 'Target URL', 'Niche', 'Resource URL', 'Resource Email', 'DA', 'RD',
                 'Notes', 'Sent To Writers', 'Currency', 'Price', 'Article sent to the site',
                 'Live Link Received', 'Live Link', 'Paid', 'USD Price', 'THB Price', 'Status', 'Sectors');
             if ($headers === $ordersHeader) {
@@ -396,7 +348,7 @@
                 require_once(ABSPATH . 'wp-admin/includes/post.php');
             }
             if ($mam_type == 'Resources') {
-                $count = 1;
+                $count = 0;
                 foreach ($lines as $line) {
                     if (post_exists($line[0], '', '', 'resources')) {
                         $mam_updatingLines[] = $count . ': ' . $line[0];
@@ -404,7 +356,7 @@
                         $mam_newLines[] = $count . ': ' . $line[0];
                     }
                     // $mam_duplicatedLines
-                    $_count = 1;
+                    $_count = 0;
                     foreach ($lines as $_line) {
                         if ($line[0] == $_line[0]) {
                             if ($_count != $count) {
@@ -417,10 +369,10 @@
 
                     // $mam_errorLines
                     if (!filter_var(gethostbyname($line[0]), FILTER_VALIDATE_IP)) {
-                        $mam_errorLines[] = $count . ': Invalid domain name';
+                        $mam_errorLines[] = ($count+1) . ': Invalid domain name';
                     }
                     if (!filter_var($line[1], FILTER_VALIDATE_EMAIL)) {
-                        $mam_errorLines[] = $count . ': Invalid contact email';
+                        $mam_errorLines[] = ($count+1) . ': Invalid contact email';
                     }
 
                     // $mam_new_sectors
@@ -442,59 +394,63 @@
 
 
             if ($mam_type == 'Orders') {
-                $count = 1;
+                $count = 0;
                 foreach ($lines as $line) {
 
                     // $mam_new_order, $mam_existing_order
                     if (post_exists($line[0], '', '', 'order')) {
-                        $mam_existing_order[] = $count . ': ' . $line[0];
+                        $mam_existing_order[] = ($count+1) . ': ' . $line[0];
                     } else {
-                        $mam_new_order[] = $count . ': ' . $line[0];
+                        $mam_new_order[] = ($count+1) . ': ' . $line[0];
                     }
 
                     // $mam_new_client, $mam_existing_client
                     if (post_exists($line[1], '', '', 'client')) {
-                        $mam_existing_client[] = $count . ': ' . $line[1];
+                        $mam_existing_client[] = ($count+1) . ': ' . $line[1];
                     } else {
-                        $mam_new_client[] = $count . ': ' . $line[1];
+                        $mam_new_client[] = ($count+1) . ': ' . $line[1];
                     }
 
                     // $mam_new_agency and $mam_existing_agency
                     if (post_exists($line[3], '', '', 'agency')) {
-                        $mam_existing_agency[] = $count . ': ' . $line[3];
+                        $mam_existing_agency[] = ($count+1) . ': ' . $line[3];
                     } else {
-                        $mam_new_agency[] = $count . ': ' . $line[3];
+                        $mam_new_agency[] = ($count+1) . ': ' . $line[3];
                     }
 
                     // $mam_updatingLines and $mam_newLines
-                    if (post_exists($line[6], '', '', 'resources')) {
-                        $mam_updatingLines[] = $count . ': ' . $line[6];
-                    } else {
-                        $mam_newLines[] = $count . ': ' . $line[6];
+                    if($line[7] != ''){
+                        if (post_exists($line[7], '', '', 'resources')) {
+                            $mam_updatingLines[] = ($count+1) . ': ' . $line[7];
+                        } else {
+                            $mam_newLines[] = ($count+1) . ': ' . $line[7];
+                        }
                     }
 
                     // $mam_errorLines
                     if (strlen($line[0]) < 2) {
-                        $mam_errorLines[] = $count . ': Invalid order ID';
+                        $mam_errorLines[] = ($count+1) . ': Invalid order ID';
                     }
                     if (strlen($line[1]) < 2) {
-                        $mam_errorLines[] = $count . ': Invalid client name';
+                        $mam_errorLines[] = ($count+1) . ': Invalid client name';
                     }
 
-                    // $mam_errorLines
-                    if (!filter_var(gethostbyname($line[6]), FILTER_VALIDATE_IP)) {
-                        $mam_errorLines[] = $count . ': Invalid domain name';
-                    }
-                    if (!filter_var($line[7], FILTER_VALIDATE_EMAIL)) {
-                        $mam_errorLines[] = $count . ': Invalid contact email';
+                    if($line[7] != ''){
+                        // $mam_errorLines
+                        if (!filter_var(gethostbyname($line[7]), FILTER_VALIDATE_IP)) {
+                            $mam_errorLines[] = ($count+1) . ': Invalid domain name';
+                        }
+                        if (!filter_var($line[8], FILTER_VALIDATE_EMAIL) && $line[7] != '') {
+                            $mam_errorLines[] = ($count+1) . ': Invalid contact email';
+                        }
                     }
 
                     // $mam_duplicatedLines
-                    $_count = 1;
+                    $_count = 0;
                     foreach ($lines as $_line) {
                         if ($line[0] == $_line[0]) {
                             if ($_count != $count) {
-                                $mam_duplicatedLines[] = $count . ':' . $_count;
+                                $mam_duplicatedLines[] = ($count+1) . ':' . ($_count+1);
                             }
                         }
 
@@ -512,7 +468,7 @@
                             }
                         }
                     }
-
+                    $count = $count + 1;
                 }
             }
         }

@@ -92,7 +92,7 @@ class Agencies implements ServiceInterface
     function init_agency_template($template)
     {
         global $post;
-        if ('client' == $post->post_type) {
+        if ('agency' == $post->post_type) {
             $theme_files = array('single-agency.php', 'mam/single-agency.php');
             $exists_in_theme = locate_template($theme_files, false);
             if ($exists_in_theme != '') {
@@ -124,15 +124,13 @@ class Agencies implements ServiceInterface
 
     /**
      * Get the properties filtered
-     * @param $getData array
      * @return WP_Query
      */
-    public function filtered_posts($getData)
+    public function filtered_posts()
     {
         // args
         $args = array(
             'numberposts' => -1,
-            'asdasd' => $getData,
             'post_type' => 'agency'
         );
 

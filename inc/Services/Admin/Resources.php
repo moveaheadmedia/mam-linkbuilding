@@ -233,7 +233,7 @@ class Resources implements ServiceInterface
     function init_resources_template($template)
     {
         global $post;
-        if ('client' == $post->post_type) {
+        if ('resources' == $post->post_type) {
             $theme_files = array('single-resources.php', 'mam/single-resources.php');
             $exists_in_theme = locate_template($theme_files, false);
             if ($exists_in_theme != '') {
@@ -906,16 +906,95 @@ set the price if there is a special price.',
 
     /**
      * Get the properties filtered
+     * @param $filters array the list of filters
      * @return WP_Query
      */
-    public function filtered_posts()
+    public function filtered_posts($filters)
     {
+        $meta_query = array();
+        if (isset($filters['da']) & $filters['da'] != '') {
+            $meta_query[] = [
+                'key' => 'da',
+                'value' => $filters['da'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['da1']) & $filters['da1'] != '') {
+            $meta_query[] = [
+                'key' => 'da',
+                'value' => $filters['da1'],
+                'compare' => '<=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['dr']) & $filters['dr'] != '') {
+            $meta_query[] = [
+                'key' => 'dr',
+                'value' => $filters['dr'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['dr1']) & $filters['dr1'] != '') {
+            $meta_query[] = [
+                'key' => 'dr',
+                'value' => $filters['dr1'],
+                'compare' => '<=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['rd']) & $filters['rd'] != '') {
+            $meta_query[] = [
+                'key' => 'rd',
+                'value' => $filters['rd'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['tr']) & $filters['tr'] != '') {
+            $meta_query[] = [
+                'key' => 'tr',
+                'value' => $filters['tr'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+        if (isset($filters['sectors']) & !empty($filters['sectors']))
+            $tax_query = array(
+                array(
+                    'taxonomy' => 'sector',
+                    'terms' => $filters['sectors'],
+                    'field' => 'term_id',
+                )
+            );
+
+        $resourceIDs = array();
+        if (isset($filters['client']) & !empty($filters['client'])){
+            $orders = apply_filters('mam-orders-filtered-posts', $filters);
+            if ($orders->have_posts()) {
+                while ($orders->have_posts()) {
+                    $orders->the_post();
+                    $resourceIDs[] = get_field('resource', get_the_ID());
+                }
+            }
+        }
+
         // args
         $args = array(
             'numberposts' => '-1',
             'posts_per_page' => '-1',
             'posts_per_archive_page' => '-1',
-            'post_type' => 'resources'
+            'post_type' => 'resources',
+            'meta_query' => $meta_query,
+            'tax_query' => $tax_query,
+            'operator' => 'EXISTS',
+            'post__not_in' => $resourceIDs,
         );
 
         // query

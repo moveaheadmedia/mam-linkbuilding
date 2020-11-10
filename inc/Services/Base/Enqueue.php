@@ -35,6 +35,7 @@ class Enqueue implements ServiceInterface
      */
     public function register_css()
     {
+
         wp_register_style('bootstrap', 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css');
         wp_enqueue_style('bootstrap');
 
@@ -49,6 +50,9 @@ class Enqueue implements ServiceInterface
 
         wp_register_style('bootstrap-slider', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css');
         wp_enqueue_style('bootstrap-slider');
+
+        wp_register_style('bootstrap-select', 'https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css');
+        wp_enqueue_style('bootstrap-select');
 
         wp_register_style('mam-lb-plugin', $this->plugin_url . 'assets/css/mam-lb-plugin.css');
         wp_enqueue_style('mam-lb-plugin');
@@ -83,6 +87,9 @@ class Enqueue implements ServiceInterface
 
         wp_register_script('bootstrap-slider', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js', array('jquery', 'bootstrap', 'popper'));
         wp_enqueue_script('bootstrap-slider');
+
+        wp_register_script('bootstrap-select', 'https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js', array('jquery', 'bootstrap', 'popper'));
+        wp_enqueue_script('bootstrap-select');
 
         wp_register_script('mam-lb-plugin', $this->plugin_url . 'assets/js/mam-lb-plugin.js', array('jquery'));
         wp_enqueue_script('mam-lb-plugin');
