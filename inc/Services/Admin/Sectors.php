@@ -51,7 +51,7 @@ class Sectors implements ServiceInterface
             'menu_name' => __( 'Sectors' ),
         );
 
-        register_taxonomy('sector',['resources', 'order'],array(
+        register_taxonomy('sector',['resources', 'lborder'],array(
             'hierarchical' => false,
             'labels' => $labels,
             'show_ui' => true,

@@ -31,9 +31,9 @@ class Orders implements ServiceInterface
         add_filter('gettext', array($this, 'custom_enter_title'));
 
         // Admin table
-        add_filter('manage_order_posts_columns', array($this, 'set_custom_edit_order_columns'));
-        add_action('manage_order_posts_custom_column', array($this, 'custom_order_column'), 10, 2);
-        add_filter('manage_edit-order_sortable_columns', array($this, 'set_custom_order_sortable_columns'));
+        //add_filter('manage_lborder_posts_columns', array($this, 'set_custom_edit_order_columns'));
+        //add_action('manage_lborder_posts_custom_column', array($this, 'custom_order_column'), 10, 2);
+        //add_filter('manage_edit-lborder_sortable_columns', array($this, 'set_custom_order_sortable_columns'));
     }
 
     /**
@@ -89,7 +89,7 @@ class Orders implements ServiceInterface
             'publicly_queryable' => true,
             'capability_type' => 'page',
         );
-        register_post_type('order', $args);
+        register_post_type('lborder', $args);
     }
 
     /**
@@ -100,13 +100,13 @@ class Orders implements ServiceInterface
     function init_order_template($template)
     {
         global $post;
-        if ('order' == $post->post_type) {
-            $theme_files = array('single-order.php', 'mam/single-order.php');
+        if ('lborder' == $post->post_type) {
+            $theme_files = array('single-lborder.php', 'mam/single-lborder.php');
             $exists_in_theme = locate_template($theme_files, false);
             if ($exists_in_theme != '') {
                 return $exists_in_theme;
             } else {
-                return $this->plugin_path . 'templates/single-order.php';
+                return $this->plugin_path . 'templates/single-lborder.php';
             }
         }
         return $template;
@@ -119,13 +119,13 @@ class Orders implements ServiceInterface
      */
     public function archive_template($template)
     {
-        if (is_post_type_archive('order')) {
-            $theme_files = array('archive-order.php', 'mam/archive-order.php');
+        if (is_post_type_archive('lborder')) {
+            $theme_files = array('archive-lborder.php', 'mam/archive-lborder.php');
             $exists_in_theme = locate_template($theme_files, false);
             if ($exists_in_theme != '') {
                 return $exists_in_theme;
             } else {
-                return $this->plugin_path . 'templates/archive-order.php';
+                return $this->plugin_path . 'templates/archive-lborder.php';
             }
         }
         return $template;
@@ -138,11 +138,11 @@ class Orders implements ServiceInterface
     {
         if (function_exists('acf_add_local_field_group')) {
             acf_add_local_field_group(array(
-                'key' => 'group_5fa3777e3766b',
-                'title' => 'Order Info',
+                'key' => 'group_5ffe979d903d2',
+                'title' => 'Order Details',
                 'fields' => array(
                     array(
-                        'key' => 'field_5fa377873f656',
+                        'key' => 'field_5ffe97d6bdf5a',
                         'label' => 'Client',
                         'name' => 'client',
                         'type' => 'post_object',
@@ -164,7 +164,7 @@ class Orders implements ServiceInterface
                         'ui' => 1,
                     ),
                     array(
-                        'key' => 'field_5fa377b93f658',
+                        'key' => 'field_5ffe981dbdf5b',
                         'label' => 'Anchor Text',
                         'name' => 'anchor_text',
                         'type' => 'text',
@@ -183,7 +183,7 @@ class Orders implements ServiceInterface
                         'maxlength' => '',
                     ),
                     array(
-                        'key' => 'field_5fa377f43f659',
+                        'key' => 'field_5ffe9835bdf5c',
                         'label' => 'Target URL',
                         'name' => 'target_url',
                         'type' => 'url',
@@ -199,7 +199,7 @@ class Orders implements ServiceInterface
                         'placeholder' => '',
                     ),
                     array(
-                        'key' => 'field_5fa377b93f8658',
+                        'key' => 'field_5ffe98f4bdf65',
                         'label' => 'Niche',
                         'name' => 'niche',
                         'type' => 'text',
@@ -218,10 +218,10 @@ class Orders implements ServiceInterface
                         'maxlength' => '',
                     ),
                     array(
-                        'key' => 'field_5fa377a43f657',
-                        'label' => 'Resource',
-                        'name' => 'resource',
-                        'type' => 'post_object',
+                        'key' => 'field_5ffe9847bdf5d',
+                        'label' => 'Sent To Writers',
+                        'name' => 'sent_to_writers',
+                        'type' => 'date_picker',
                         'instructions' => '',
                         'required' => 0,
                         'conditional_logic' => 0,
@@ -230,19 +230,199 @@ class Orders implements ServiceInterface
                             'class' => '',
                             'id' => '',
                         ),
-                        'post_type' => array(
-                            0 => 'resources',
-                        ),
-                        'taxonomy' => '',
-                        'allow_null' => 0,
-                        'multiple' => 0,
-                        'return_format' => 'id',
-                        'ui' => 1,
+                        'display_format' => 'Y-m-d',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
                     ),
                     array(
-                        'key' => 'field_5fa3780e3f65b',
-                        'label' => 'Notes',
-                        'name' => 'notes',
+                        'key' => 'field_5ffe985ebdf5e',
+                        'label' => 'Articles Sent To The Sites',
+                        'name' => 'articles_sent_to_the_sites',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'Y-m-d',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5ffe988dbdf5f',
+                        'label' => 'Live Link Received',
+                        'name' => 'live_link_received',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'Y-m-d',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5ffe98a5bdf60',
+                        'label' => 'Live Link',
+                        'name' => 'live_link',
+                        'type' => 'url',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe98b1bdf61',
+                        'label' => 'Date Paid',
+                        'name' => 'date_paid',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'Y-m-d',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5ffe98c7bdf62',
+                        'label' => 'USD Price',
+                        'name' => 'usd_price',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe98cebdf63',
+                        'label' => 'THB Price',
+                        'name' => 'thb_price',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe98debdf64',
+                        'label' => 'Status',
+                        'name' => 'status',
+                        'type' => 'select',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'choices' => array(
+                            'Done' => 'Done',
+                            'Follow up' => 'Follow up',
+                            'Ongoing' => 'Ongoing',
+                        ),
+                        'default_value' => false,
+                        'allow_null' => 0,
+                        'multiple' => 0,
+                        'ui' => 0,
+                        'return_format' => 'value',
+                        'ajax' => 0,
+                        'placeholder' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffea6e14dd89',
+                        'label' => 'Start Date',
+                        'name' => 'start_date',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'Y-m-d',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5ffea6e04dd88',
+                        'label' => 'Complete Date',
+                        'name' => 'complete_date',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'Y-m-d',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
+                    array(
+                        'key' => 'field_5ffe9a45b54dc',
+                        'label' => 'Resource URL',
+                        'name' => 'resource_url',
+                        'type' => 'url',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d963ac',
+                        'label' => 'IP Address',
+                        'name' => 'ip_address',
                         'type' => 'text',
                         'instructions' => '',
                         'required' => 0,
@@ -259,10 +439,10 @@ class Orders implements ServiceInterface
                         'maxlength' => '',
                     ),
                     array(
-                        'key' => 'field_5fa388c994097',
-                        'label' => 'Sent To Writers',
-                        'name' => 'sent_to_writers',
-                        'type' => 'date_picker',
+                        'key' => 'field_5ffe979d963f4',
+                        'label' => 'Email',
+                        'name' => 'email',
+                        'type' => 'email',
                         'instructions' => '',
                         'required' => 0,
                         'conditional_logic' => 0,
@@ -271,12 +451,200 @@ class Orders implements ServiceInterface
                             'class' => '',
                             'id' => '',
                         ),
-                        'display_format' => 'F j, Y',
-                        'return_format' => 'Y-m-d',
-                        'first_day' => 1,
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
                     ),
                     array(
-                        'key' => 'field_5fa38b4f034eb',
+                        'key' => 'field_5ffe979d96437',
+                        'label' => 'Contact Name',
+                        'name' => 'contact_name',
+                        'type' => 'text',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'maxlength' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d96474',
+                        'label' => 'DA',
+                        'name' => 'da',
+                        'type' => 'number',
+                        'instructions' => 'metrics',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d964b0',
+                        'label' => 'DR',
+                        'name' => 'dr',
+                        'type' => 'number',
+                        'instructions' => 'metrics',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d964ec',
+                        'label' => 'RD',
+                        'name' => 'rd',
+                        'type' => 'number',
+                        'instructions' => 'metrics',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d96528',
+                        'label' => 'TR',
+                        'name' => 'tr',
+                        'type' => 'number',
+                        'instructions' => 'metrics',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d96565',
+                        'label' => 'PA',
+                        'name' => 'pa',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d965a1',
+                        'label' => 'TF',
+                        'name' => 'tf',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d965dd',
+                        'label' => 'CF',
+                        'name' => 'cf',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d96619',
+                        'label' => 'Organic Keywords',
+                        'name' => 'organic_keywords',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d96655',
                         'label' => 'Currency',
                         'name' => 'currency',
                         'type' => 'select',
@@ -288,188 +656,7 @@ class Orders implements ServiceInterface
                             'class' => '',
                             'id' => '',
                         ),
-                        'choices' => array(
-                            'USD' => 'USD',
-                            'GBP' => 'GBP',
-                            'AUD' => 'AUD',
-                            'EUR' => 'EUR',
-                            '=========' => '=========',
-                            'AED' => 'AED',
-                            'AFN' => 'AFN',
-                            'ALL' => 'ALL',
-                            'AMD' => 'AMD',
-                            'ANG' => 'ANG',
-                            'AOA' => 'AOA',
-                            'ARS' => 'ARS',
-                            'AWG' => 'AWG',
-                            'AZN' => 'AZN',
-                            'BAM' => 'BAM',
-                            'BBD' => 'BBD',
-                            'BDT' => 'BDT',
-                            'BGN' => 'BGN',
-                            'BHD' => 'BHD',
-                            'BIF' => 'BIF',
-                            'BMD' => 'BMD',
-                            'BND' => 'BND',
-                            'BOB' => 'BOB',
-                            'BOV' => 'BOV',
-                            'BRL' => 'BRL',
-                            'BSD' => 'BSD',
-                            'BTN' => 'BTN',
-                            'BWP' => 'BWP',
-                            'BYN' => 'BYN',
-                            'BZD' => 'BZD',
-                            'CAD' => 'CAD',
-                            'CDF' => 'CDF',
-                            'CHE' => 'CHE',
-                            'CHF' => 'CHF',
-                            'CHW' => 'CHW',
-                            'CLF' => 'CLF',
-                            'CLP' => 'CLP',
-                            'CNY' => 'CNY',
-                            'COP' => 'COP',
-                            'COU' => 'COU',
-                            'CRC' => 'CRC',
-                            'CUC' => 'CUC',
-                            'CUP' => 'CUP',
-                            'CVE' => 'CVE',
-                            'CZK' => 'CZK',
-                            'DJF' => 'DJF',
-                            'DKK' => 'DKK',
-                            'DOP' => 'DOP',
-                            'DZD' => 'DZD',
-                            'EGP' => 'EGP',
-                            'ERN' => 'ERN',
-                            'ETB' => 'ETB',
-                            'FJD' => 'FJD',
-                            'FKP' => 'FKP',
-                            'GEL' => 'GEL',
-                            'GHS' => 'GHS',
-                            'GIP' => 'GIP',
-                            'GMD' => 'GMD',
-                            'GNF' => 'GNF',
-                            'GTQ' => 'GTQ',
-                            'GYD' => 'GYD',
-                            'HKD' => 'HKD',
-                            'HNL' => 'HNL',
-                            'HRK' => 'HRK',
-                            'HTG' => 'HTG',
-                            'HUF' => 'HUF',
-                            'IDR' => 'IDR',
-                            'ILS' => 'ILS',
-                            'INR' => 'INR',
-                            'IQD' => 'IQD',
-                            'IRR' => 'IRR',
-                            'ISK' => 'ISK',
-                            'JMD' => 'JMD',
-                            'JOD' => 'JOD',
-                            'JPY' => 'JPY',
-                            'KES' => 'KES',
-                            'KGS' => 'KGS',
-                            'KHR' => 'KHR',
-                            'KMF' => 'KMF',
-                            'KPW' => 'KPW',
-                            'KRW' => 'KRW',
-                            'KWD' => 'KWD',
-                            'KYD' => 'KYD',
-                            'KZT' => 'KZT',
-                            'LAK' => 'LAK',
-                            'LBP' => 'LBP',
-                            'LKR' => 'LKR',
-                            'LRD' => 'LRD',
-                            'LSL' => 'LSL',
-                            'LYD' => 'LYD',
-                            'MAD' => 'MAD',
-                            'MDL' => 'MDL',
-                            'MGA' => 'MGA',
-                            'MKD' => 'MKD',
-                            'MMK' => 'MMK',
-                            'MNT' => 'MNT',
-                            'MOP' => 'MOP',
-                            'MRU[11]' => 'MRU[11]',
-                            'MUR' => 'MUR',
-                            'MVR' => 'MVR',
-                            'MWK' => 'MWK',
-                            'MXN' => 'MXN',
-                            'MXV' => 'MXV',
-                            'MYR' => 'MYR',
-                            'MZN' => 'MZN',
-                            'NAD' => 'NAD',
-                            'NGN' => 'NGN',
-                            'NIO' => 'NIO',
-                            'NOK' => 'NOK',
-                            'NPR' => 'NPR',
-                            'NZD' => 'NZD',
-                            'OMR' => 'OMR',
-                            'PAB' => 'PAB',
-                            'PEN' => 'PEN',
-                            'PGK' => 'PGK',
-                            'PHP' => 'PHP',
-                            'PKR' => 'PKR',
-                            'PLN' => 'PLN',
-                            'PYG' => 'PYG',
-                            'QAR' => 'QAR',
-                            'RON' => 'RON',
-                            'RSD' => 'RSD',
-                            'RUB' => 'RUB',
-                            'RWF' => 'RWF',
-                            'SAR' => 'SAR',
-                            'SBD' => 'SBD',
-                            'SCR' => 'SCR',
-                            'SDG' => 'SDG',
-                            'SEK' => 'SEK',
-                            'SGD' => 'SGD',
-                            'SHP' => 'SHP',
-                            'SLL' => 'SLL',
-                            'SOS' => 'SOS',
-                            'SRD' => 'SRD',
-                            'SSP' => 'SSP',
-                            'STN[13]' => 'STN[13]',
-                            'SVC' => 'SVC',
-                            'SYP' => 'SYP',
-                            'SZL' => 'SZL',
-                            'THB' => 'THB',
-                            'TJS' => 'TJS',
-                            'TMT' => 'TMT',
-                            'TND' => 'TND',
-                            'TOP' => 'TOP',
-                            'TRY' => 'TRY',
-                            'TTD' => 'TTD',
-                            'TWD' => 'TWD',
-                            'TZS' => 'TZS',
-                            'UAH' => 'UAH',
-                            'UGX' => 'UGX',
-                            'USN' => 'USN',
-                            'UYI' => 'UYI',
-                            'UYU' => 'UYU',
-                            'UYW' => 'UYW',
-                            'UZS' => 'UZS',
-                            'VES' => 'VES',
-                            'VND' => 'VND',
-                            'VUV' => 'VUV',
-                            'WST' => 'WST',
-                            'XAF' => 'XAF',
-                            'XAG' => 'XAG',
-                            'XAU' => 'XAU',
-                            'XBA' => 'XBA',
-                            'XBB' => 'XBB',
-                            'XBC' => 'XBC',
-                            'XBD' => 'XBD',
-                            'XCD' => 'XCD',
-                            'XDR' => 'XDR',
-                            'XOF' => 'XOF',
-                            'XPD' => 'XPD',
-                            'XPF' => 'XPF',
-                            'XPT' => 'XPT',
-                            'XSU' => 'XSU',
-                            'XTS' => 'XTS',
-                            'XUA' => 'XUA',
-                            'XXX' => 'XXX',
-                            'YER' => 'YER',
-                            'ZAR' => 'ZAR',
-                            'ZMW' => 'ZMW',
-                            'ZWL' => 'ZWL',
-                        ),
+                        'choices' => Config::getInstance()->currencies,
                         'default_value' => false,
                         'allow_null' => 0,
                         'multiple' => 0,
@@ -479,8 +666,140 @@ class Orders implements ServiceInterface
                         'placeholder' => '',
                     ),
                     array(
-                        'key' => 'field_5fa38b67034ec',
-                        'label' => 'Price',
+                        'key' => 'field_5ffe979d96691',
+                        'label' => 'Original Price',
+                        'name' => 'original_price',
+                        'type' => 'number',
+                        'instructions' => 'first price that they gave us',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d966cd',
+                        'label' => 'Casino Price',
+                        'name' => 'casino_price',
+                        'type' => 'number',
+                        'instructions' => '0 if it\'s not allowed.
+empty if it\'s allowed.
+set the price if there is a special price.',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d96709',
+                        'label' => 'CBD Price',
+                        'name' => 'cbd_price',
+                        'type' => 'number',
+                        'instructions' => '0 if it\'s not allowed.
+empty if it\'s allowed.
+set the price if there is a special price.',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d96745',
+                        'label' => 'Adult Price',
+                        'name' => 'adult_price',
+                        'type' => 'number',
+                        'instructions' => '0 if it\'s not allowed.
+empty if it\'s allowed.
+set the price if there is a special price.',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d96781',
+                        'label' => 'Link Placement Price',
+                        'name' => 'link_placement_price',
+                        'type' => 'number',
+                        'instructions' => '0 if it\'s not allowed.
+empty if it\'s allowed.
+set the price if there is a special price.',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d967bd',
+                        'label' => 'Package / Discount',
+                        'name' => 'package__discount',
+                        'type' => 'text',
+                        'instructions' => 'if they offer for bulk orders',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'maxlength' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe979d967f9',
+                        'label' => 'Finale Price',
                         'name' => 'price',
                         'type' => 'number',
                         'instructions' => '',
@@ -500,10 +819,10 @@ class Orders implements ServiceInterface
                         'step' => '',
                     ),
                     array(
-                        'key' => 'field_5fa38bdf034ed',
-                        'label' => 'DA',
-                        'name' => 'da',
-                        'type' => 'number',
+                        'key' => 'field_5ffe979d96835',
+                        'label' => 'Payment Method',
+                        'name' => 'payment_method',
+                        'type' => 'text',
                         'instructions' => '',
                         'required' => 0,
                         'conditional_logic' => 0,
@@ -516,15 +835,13 @@ class Orders implements ServiceInterface
                         'placeholder' => '',
                         'prepend' => '',
                         'append' => '',
-                        'min' => '',
-                        'max' => '',
-                        'step' => '',
+                        'maxlength' => '',
                     ),
                     array(
-                        'key' => 'field_5fa38bed034ee',
-                        'label' => 'RD',
-                        'name' => 'rd',
-                        'type' => 'number',
+                        'key' => 'field_5ffe979d96871',
+                        'label' => 'Notes',
+                        'name' => 'notes',
+                        'type' => 'text',
                         'instructions' => '',
                         'required' => 0,
                         'conditional_logic' => 0,
@@ -537,82 +854,13 @@ class Orders implements ServiceInterface
                         'placeholder' => '',
                         'prepend' => '',
                         'append' => '',
-                        'min' => '',
-                        'max' => '',
-                        'step' => '',
+                        'maxlength' => '',
                     ),
                     array(
-                        'key' => 'field_5fa3895294098',
-                        'label' => 'Articles Sent To The Sites',
-                        'name' => 'articles_sent_to_the_sites',
-                        'type' => 'date_picker',
-                        'instructions' => '',
-                        'required' => 0,
-                        'conditional_logic' => 0,
-                        'wrapper' => array(
-                            'width' => '',
-                            'class' => '',
-                            'id' => '',
-                        ),
-                        'display_format' => 'F j, Y',
-                        'return_format' => 'Y-m-d',
-                        'first_day' => 1,
-                    ),
-                    array(
-                        'key' => 'field_5fa3896594099',
-                        'label' => 'Live Link Received',
-                        'name' => 'live_link_received',
-                        'type' => 'date_picker',
-                        'instructions' => '',
-                        'required' => 0,
-                        'conditional_logic' => 0,
-                        'wrapper' => array(
-                            'width' => '',
-                            'class' => '',
-                            'id' => '',
-                        ),
-                        'display_format' => 'F j, Y',
-                        'return_format' => 'Y-m-d',
-                        'first_day' => 1,
-                    ),
-                    array(
-                        'key' => 'field_5fa38c03034ef',
-                        'label' => 'Live Link',
-                        'name' => 'live_link',
-                        'type' => 'url',
-                        'instructions' => '',
-                        'required' => 0,
-                        'conditional_logic' => 0,
-                        'wrapper' => array(
-                            'width' => '',
-                            'class' => '',
-                            'id' => '',
-                        ),
-                        'default_value' => '',
-                        'placeholder' => '',
-                    ),
-                    array(
-                        'key' => 'field_5fa389779409a',
-                        'label' => 'We Paid',
-                        'name' => 'we_paid',
-                        'type' => 'date_picker',
-                        'instructions' => '',
-                        'required' => 0,
-                        'conditional_logic' => 0,
-                        'wrapper' => array(
-                            'width' => '',
-                            'class' => '',
-                            'id' => '',
-                        ),
-                        'display_format' => 'F j, Y',
-                        'return_format' => 'Y-m-d',
-                        'first_day' => 1,
-                    ),
-                    array(
-                        'key' => 'field_5fa38c2b034f0',
-                        'label' => 'Dollar Price',
-                        'name' => 'dollar_price',
-                        'type' => 'number',
+                        'key' => 'field_5ffe979d968ad',
+                        'label' => 'Secondary Email',
+                        'name' => 'secondary_email',
+                        'type' => 'email',
                         'instructions' => '',
                         'required' => 0,
                         'conditional_logic' => 0,
@@ -625,15 +873,12 @@ class Orders implements ServiceInterface
                         'placeholder' => '',
                         'prepend' => '',
                         'append' => '',
-                        'min' => '',
-                        'max' => '',
-                        'step' => '',
                     ),
                     array(
-                        'key' => 'field_5fa38c33034f1',
-                        'label' => 'Baht Price',
-                        'name' => 'baht_price',
-                        'type' => 'number',
+                        'key' => 'field_5ffe979d968e9',
+                        'label' => 'Origin File',
+                        'name' => 'origin_file',
+                        'type' => 'text',
                         'instructions' => '',
                         'required' => 0,
                         'conditional_logic' => 0,
@@ -646,14 +891,12 @@ class Orders implements ServiceInterface
                         'placeholder' => '',
                         'prepend' => '',
                         'append' => '',
-                        'min' => '',
-                        'max' => '',
-                        'step' => '',
+                        'maxlength' => '',
                     ),
                     array(
-                        'key' => 'field_5fa38a1d92332',
-                        'label' => 'Status',
-                        'name' => 'status',
+                        'key' => 'field_5ffe979d96926',
+                        'label' => 'Rating',
+                        'name' => 'rating',
                         'type' => 'select',
                         'instructions' => '',
                         'required' => 0,
@@ -664,9 +907,12 @@ class Orders implements ServiceInterface
                             'id' => '',
                         ),
                         'choices' => array(
-                            'Ongoing' => 'Ongoing',
-                            'Refused' => 'Refused',
-                            'Completed' => 'Completed',
+                            'No Rating' => 'No Rating',
+                            '★' => '★',
+                            '★★' => '★★',
+                            '★★★' => '★★★',
+                            '★★★★' => '★★★★',
+                            '★★★★★' => '★★★★★',
                         ),
                         'default_value' => false,
                         'allow_null' => 0,
@@ -676,13 +922,30 @@ class Orders implements ServiceInterface
                         'ajax' => 0,
                         'placeholder' => '',
                     ),
+                    array(
+                        'key' => 'field_5ffe979d9699e',
+                        'label' => 'Metrics Update Date',
+                        'name' => 'metrics_update_date',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'Y-m-d',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
                 ),
                 'location' => array(
                     array(
                         array(
                             'param' => 'post_type',
                             'operator' => '==',
-                            'value' => 'order',
+                            'value' => 'lborder',
                         ),
                     ),
                 ),
@@ -707,192 +970,11 @@ class Orders implements ServiceInterface
 
         global $post_type;
 
-        if (is_admin() && 'Add title' == $input && 'order' == $post_type)
+        if (is_admin() && 'Add title' == $input && 'lborder' == $post_type)
             return 'Order Number';
 
         return $input;
     }
-
-    /**
-     * Add columns to the clients admin table
-     * @param $columns array list of columns
-     * @return array list of columns
-     */
-    public function set_custom_edit_order_columns($columns)
-    {
-        unset($columns['date']);
-        $columns['title'] = __('ID');
-        $columns['client'] = __('Client');
-        $columns['text'] = __('Anchor Text');
-        $columns['target'] = __('Target URL');
-        $columns['niche'] = __('Niche');
-        $columns['resource'] = __('Resource');
-        $columns['notes'] = __('Notes');
-        $columns['sent_to_writers'] = __('Writers');
-        $columns['price'] = __('price');
-        $columns['da'] = __('DA');
-        $columns['rd'] = __('RD');
-        $columns['articles_sent_to_the_sites'] = __('Sent');
-        $columns['live_link_received'] = __('Live Link Received');
-        $columns['we_paid'] = __('Paid');
-        $columns['status'] = __('Status');
-        return $columns;
-    }
-
-    /**
-     * Add data to the client custom columns
-     */
-    public function custom_order_column($column, $post_id)
-    {
-        switch ($column) {
-            case 'client' :
-                $client = get_field('client', $post_id);
-                $client_name = get_the_title($client);
-                $client_url = get_the_permalink($client);
-                if (is_string($client_name))
-                    echo '<a href="' . $client_url . '" target="_blank">' . $client_name . '</a>';
-                else
-                    _e('Unable to get client');
-                break;
-            case 'text' :
-                $anchor_text = get_field('anchor_text', $post_id);
-                if (($anchor_text))
-                    echo $anchor_text;
-                else
-                    _e('-');
-                break;
-            case 'target' :
-                $target_url = get_field('target_url', $post_id);
-                if (($target_url))
-                    echo $target_url;
-                else
-                    _e('-');
-                break;
-            case 'niche' :
-                $niche = get_field('niche', $post_id);
-                if (($niche))
-                    echo $niche;
-                else
-                    _e('-');
-                break;
-            case 'resource' :
-                $resource = get_field('resource', $post_id);
-                $resource_name = get_the_title($resource);
-                $resource_url = get_the_permalink($resource);
-                if (($resource))
-                    echo '<a href="' . $resource_url . '" target="_blank">' . $resource_name . '</a>';
-                else
-                    echo '-';
-                break;
-            case 'notes' :
-                $notes = get_field('notes', $post_id);
-                if (($notes))
-                    echo $notes;
-                else
-                    _e('-');
-                break;
-            case 'sent_to_writers' :
-                $sent_to_writers = get_field('sent_to_writers', $post_id);
-                if (($sent_to_writers))
-                    echo $sent_to_writers;
-                else
-                    _e('-');
-                break;
-            case 'price' :
-                $price = get_field('price', $post_id);
-                $currency = get_field('currency', $post_id);
-                if (!$currency) {
-                    $currency = 'USD';
-                }
-                if (($price)) {
-                    echo $price . ' ' . $currency;
-                } else {
-                    _e('-');
-                }
-                break;
-            case 'da' :
-                $da = get_field('da', $post_id);
-                if (($da))
-                    echo $da;
-                else
-                    _e('-');
-                break;
-            case 'rd' :
-                $rd = get_field('rd', $post_id);
-                if (($rd))
-                    echo $rd;
-                else
-                    _e('-');
-                break;
-            case 'articles_sent_to_the_sites' :
-                $articles_sent_to_the_sites = get_field('articles_sent_to_the_sites', $post_id);
-                if (($articles_sent_to_the_sites))
-                    echo $articles_sent_to_the_sites;
-                else
-                    _e('-');
-                break;
-            case 'live_link_received' :
-                $live_link_received = get_field('live_link_received', $post_id);
-                $live_link = get_field('live_link', $post_id);
-                $live_link_received_string = '<a href="' . $live_link . '" target="_blank">' . $live_link_received . '</a>';
-                if (($live_link_received))
-                    echo $live_link_received_string;
-                else
-                    _e('-');
-                break;
-            case 'we_paid' :
-                $we_paid = get_field('we_paid', $post_id);
-                $usd = get_field('dollar_price', $post_id);
-                $thb = get_field('baht_price', $post_id);
-                $prices = '';
-                if (($we_paid)) {
-                    $prices = $usd;
-                    if (is_string($thb)) {
-                        $prices = $usd . ' / ' . $thb;
-                    }
-                } else {
-                    if (is_string($thb)) {
-                        $prices = $thb;
-                    }
-                }
-                if (($we_paid))
-                    echo $we_paid . '<br />' . $prices;
-                else
-                    _e('-');
-                break;
-            case 'status' :
-                $status = get_field('status', $post_id);
-                if (($status))
-                    echo $status;
-                else
-                    _e('-');
-                break;
-        }
-    }
-
-    /**
-     * Make columns in the clients admin table sortable
-     */
-    public function set_custom_order_sortable_columns($columns)
-    {
-        $columns['client'] = 'client';
-        $columns['text'] = 'text';
-        $columns['target'] = 'target';
-        $columns['niche'] = 'niche';
-        $columns['resource'] = 'resource';
-        $columns['notes'] = 'notes';
-        $columns['sent_to_writers'] = 'sent_to_writers';
-        $columns['price'] = 'price';
-        $columns['da'] = 'da';
-        $columns['rd'] = 'rd';
-        $columns['articles_sent_to_the_sites'] = 'articles_sent_to_the_sites';
-        $columns['live_link_received'] = 'live_link_received';
-        $columns['we_paid'] = 'we_paid';
-        $columns['prices'] = 'prices';
-        $columns['status'] = 'status';
-        return $columns;
-    }
-
 
     /**
      * Get the properties filtered
@@ -904,14 +986,13 @@ class Orders implements ServiceInterface
         $meta_query = [];
         $meta_query['relation'] = 'AND';
 
-        if ($filters['client'] != '') {
+        if (isset($filters['client']) && $filters['client'] != '') {
             $meta_query[] = [
                 'key' => 'client',
                 'value' => $filters['client'],
                 'compare' => '='
             ];
         }
-
 
         if (isset($filters['agency'])) {
             /**
@@ -938,7 +1019,7 @@ class Orders implements ServiceInterface
         // args
         $args = array(
             'numberposts' => -1,
-            'post_type' => 'order',
+            'post_type' => 'lborder',
             'meta_query' => $meta_query
         );
 
@@ -949,42 +1030,28 @@ class Orders implements ServiceInterface
     /**
      * update the resource custom fields
      * @param $orderID int the order id
-     * @param $resourceID int the resource id
      * @param $clientID int the client id
      * @param $orderData array the custom fields data
      */
-    public static function update_order($orderID, $resourceID, $clientID, $orderData)
+    public static function update_order($orderID, $clientID, $orderData)
     {
 
         update_field('client', $clientID, $orderID);
-        update_field('resource', $resourceID, $orderID);
 
         if (isset($orderData['Anchor Text'])) {
             update_field('anchor_text', $orderData['Anchor Text'], $orderID);
         }
+        if (isset($orderData['Anchor Text Type'])) {
+            update_field('anchor_text_type', $orderData['Anchor Text Type'], $orderID);
+        }
         if (isset($orderData['Target URL'])) {
             update_field('target_url', $orderData['Target URL'], $orderID);
-        }
-        if (isset($orderData['Notes'])) {
-            update_field('notes', $orderData['Notes'], $orderID);
         }
         if (isset($orderData['Niche'])) {
             update_field('niche', $orderData['Niche'], $orderID);
         }
         if (isset($orderData['Sent To Writers'])) {
             update_field('sent_to_writers', $orderData['Sent To Writers'], $orderID);
-        }
-        if (isset($orderData['Currency'])) {
-            update_field('currency', $orderData['Currency'], $orderID);
-        }
-        if (isset($orderData['Price'])) {
-            update_field('price', $orderData['Price'], $orderID);
-        }
-        if (isset($orderData['DA'])) {
-            update_field('da', $orderData['DA'], $orderID);
-        }
-        if (isset($orderData['RD'])) {
-            update_field('rd', $orderData['RD'], $orderID);
         }
         if (isset($orderData['Article sent to the site'])) {
             update_field('articles_sent_to_the_sites', $orderData['Article sent to the site'], $orderID);
@@ -995,17 +1062,108 @@ class Orders implements ServiceInterface
         if (isset($orderData['Live Link'])) {
             update_field('live_link', $orderData['Live Link'], $orderID);
         }
-        if (isset($orderData['Paid'])) {
-            update_field('we_paid', $orderData['Paid'], $orderID);
+        if (isset($orderData['Date Paid'])) {
+            update_field('date_paid', $orderData['Date Paid'], $orderID);
         }
         if (isset($orderData['USD Price'])) {
-            update_field('dollar_price', $orderData['USD Price'], $orderID);
+            update_field('usd_price', $orderData['USD Price'], $orderID);
         }
         if (isset($orderData['THB Price'])) {
-            update_field('baht_price', $orderData['THB Price'], $orderID);
+            update_field('thb_price', $orderData['THB Price'], $orderID);
         }
         if (isset($orderData['Status'])) {
             update_field('status', $orderData['Status'], $orderID);
+        }
+        if (isset($orderData['Start Date'])) {
+            update_field('start_date', $orderData['Start Date'], $orderID);
+        }
+        if (isset($orderData['Complete Date'])) {
+            update_field('complete_date', $orderData['Complete Date'], $orderID);
+        }
+
+        if (isset($orderData['Resource URL'])) {
+            update_field('resource_url', $orderData['Resource URL'], $orderID);
+        }
+        if (isset($orderData['IP Address'])) {
+            update_field('ip_address', $orderData['IP Address'], $orderID);
+        }
+        if (isset($orderData['Email'])) {
+            update_field('email', $orderData['Email'], $orderID);
+        }
+        if (isset($orderData['Name'])) {
+            update_field('contact_name', $orderData['Name'], $orderID);
+        }
+        if (isset($orderData['DA'])) {
+            update_field('da', $orderData['DA'], $orderID);
+        }
+        if (isset($orderData['DR'])) {
+            update_field('dr', $orderData['DR'], $orderID);
+        }
+        if (isset($orderData['RD'])) {
+            update_field('rd', $orderData['RD'], $orderID);
+        }
+        if (isset($orderData['TR'])) {
+            update_field('tr', $orderData['TR'], $orderID);
+        }
+        if (isset($orderData['PA'])) {
+            update_field('pa', $orderData['PA'], $orderID);
+        }
+        if (isset($orderData['TF'])) {
+            update_field('tf', $orderData['TF'], $orderID);
+        }
+        if (isset($orderData['CF'])) {
+            update_field('cf', $orderData['CF'], $orderID);
+        }
+        if (isset($orderData['Organic Keywords'])) {
+            update_field('organic_keywords', $orderData['Organic Keywords'], $orderID);
+        }
+        if (isset($orderData['Currency'])) {
+            update_field('currency', $orderData['Currency'], $orderID);
+        }
+        if (isset($orderData['Country'])) {
+            update_field('country', $orderData['Country'], $orderID);
+        }
+        if (isset($orderData['Original Price'])) {
+            update_field('original_price', $orderData['Original Price'], $orderID);
+        }
+        if (isset($orderData['Casino Price'])) {
+            update_field('casino_price', $orderData['Casino Price'], $orderID);
+        }
+        if (isset($orderData['CBD Price'])) {
+            update_field('cbd_price', $orderData['CBD Price'], $orderID);
+        }
+        if (isset($orderData['Adult Price'])) {
+            update_field('adult_price', $orderData['Adult Price'], $orderID);
+        }
+        if (isset($orderData['Link Placement Price'])) {
+            update_field('link_placement_price', $orderData['Link Placement Price'], $orderID);
+        }
+        if (isset($orderData['Package / Discount'])) {
+            update_field('package__discount', $orderData['Package / Discount'], $orderID);
+        }
+        if (isset($orderData['Finale Price'])) {
+            update_field('price', $orderData['Finale Price'], $orderID);
+        }
+        if (isset($orderData['Payment Method'])) {
+            update_field('payment_method', $orderData['Payment Method'], $orderID);
+        }
+        if (isset($orderData['Notes'])) {
+            update_field('notes', $orderData['Notes'], $orderID);
+        }
+        if (isset($orderData['Secondary Email'])) {
+            update_field('secondary_email', $orderData['Secondary Email'], $orderID);
+        }
+        if (isset($orderData['Origin File'])) {
+            update_field('origin_file', $orderData['Origin File'], $orderID);
+        }
+        if (isset($orderData['Rating'])) {
+            update_field('rating', $orderData['Rating'], $orderID);
+        }
+        if (isset($orderData['Status'])) {
+            update_field('status', $orderData['Status'], $orderID);
+        }
+        if (isset($orderData['Metrics Update Date'])) {
+            update_field('metrics_update_date', $orderData['Metrics Update Date'], $orderID);
         }
         if (isset($orderData['Sectors'])) {
             $sectors = explode(', ', $orderData['Sectors']);

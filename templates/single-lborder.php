@@ -45,6 +45,7 @@ get_header(); ?>
                         <li><b>Agency:</b> <a data-type="iframe" href="<?php echo get_the_permalink(get_field('website', $id)); ?>" target="_blank"
                                               data-fancybox><?php echo get_the_title($agency); ?></a></li>
                         <li><b>Anchor Text:</b> <?php echo get_field('anchor_text', $id);; ?></li>
+                        <li><b>Anchor Text Type:</b> <?php echo get_field('anchor_text_type', $id);; ?></li>
                         <li><b>Target URL:</b> <?php echo get_field('target_url', $id);; ?></li>
                         <li><b>Niche:</b> <?php echo get_field('niche', $id);; ?></li>
                         <li><b>Resource:</b>
@@ -105,6 +106,11 @@ get_header(); ?>
                             } ?></li>
                         <li><b>RD:</b> <?php if (get_field('rd', $id)) {
                                 echo get_field('rd', $id);
+                            } else {
+                                echo '-';
+                            } ?></li>
+                        <li><b>Country:</b> <?php if (get_field('country', $id)) {
+                                echo get_field('country', $id);
                             } else {
                                 echo '-';
                             } ?></li>

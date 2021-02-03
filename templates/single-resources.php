@@ -43,6 +43,7 @@ get_header(); ?>
                         <li><b>DR:</b> <?php echo get_field('dr', $id); ?></li>
                         <li><b>RD:</b> <?php echo get_field('rd', $id); ?></li>
                         <li><b>TR:</b> <?php echo get_field('tr', $id); ?></li>
+                        <li><b>Country:</b> <?php echo get_field('country', $id); ?></li>
                         <li><b>Currency:</b> <?php echo get_field('currency', $id); ?></li>
                         <li><b>Original Price:</b> <?php echo get_field('original_price', $id); ?></li>
                         <li><b>Casino Price:</b> <?php echo get_field('casino_price', $id); ?></li>
@@ -55,6 +56,7 @@ get_header(); ?>
                         <li><b>Comments:</b> <?php echo get_field('comments', $id); ?></li>
                         <li><b>Rating:</b> <?php echo get_field('rating', $id); ?></li>
                         <li><b>Origin File:</b> <?php echo get_field('origin_file', $id); ?></li>
+                        <li><b>Niche:</b> <?php echo get_field('niche', $id); ?></li>
                     </ul>
 
 

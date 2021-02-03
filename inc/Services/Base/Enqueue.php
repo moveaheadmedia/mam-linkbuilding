@@ -48,11 +48,14 @@ class Enqueue implements ServiceInterface
         wp_register_style('datatables', 'https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css');
         wp_enqueue_style('datatables');
 
-        wp_register_style('bootstrap-slider', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css');
-        wp_enqueue_style('bootstrap-slider');
-
         wp_register_style('bootstrap-select', 'https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css');
         wp_enqueue_style('bootstrap-select');
+
+        wp_register_style('jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css');
+        wp_enqueue_style('jquery-ui');
+
+        wp_register_style('jquery-ui-theme', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/theme.min.css');
+        wp_enqueue_style('jquery-ui-theme');
 
         wp_register_style('mam-lb-plugin', $this->plugin_url . 'assets/css/mam-lb-plugin.css');
         wp_enqueue_style('mam-lb-plugin');
@@ -85,11 +88,32 @@ class Enqueue implements ServiceInterface
         wp_register_script('datatables', 'https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js', array('jquery'));
         wp_enqueue_script('datatables');
 
-        wp_register_script('bootstrap-slider', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js', array('jquery', 'bootstrap', 'popper'));
-        wp_enqueue_script('bootstrap-slider');
+        wp_register_script('datatables-btns', 'https://cdn.datatables.net/buttons/1.6.5/js/dataTables.buttons.min.js', array('jquery'));
+        wp_enqueue_script('datatables-btns');
+
+        wp_register_script('datatables-btf-flash', 'https://cdn.datatables.net/buttons/1.6.5/js/buttons.flash.min.js', array('jquery'));
+        wp_enqueue_script('datatables-btf-flash');
+
+        wp_register_script('datatables-jszip', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js', array('jquery'));
+        wp_enqueue_script('datatables-jszip');
+
+        wp_register_script('datatables-pdf', 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js', array('jquery'));
+        wp_enqueue_script('datatables-pdf');
+
+        wp_register_script('datatables-fonts', 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js', array('jquery'));
+        wp_enqueue_script('datatables-fonts');
+
+        wp_register_script('datatables-btns-html', 'https://cdn.datatables.net/buttons/1.6.5/js/buttons.html5.min.js', array('jquery'));
+        wp_enqueue_script('datatables-btns-html');
+
+        wp_register_script('datatables-print', 'https://cdn.datatables.net/buttons/1.6.5/js/buttons.print.min.js', array('jquery'));
+        wp_enqueue_script('datatables-print');
 
         wp_register_script('bootstrap-select', 'https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js', array('jquery', 'bootstrap', 'popper'));
         wp_enqueue_script('bootstrap-select');
+
+        wp_register_script('jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js', array('jquery'));
+        wp_enqueue_script('jquery-ui');
 
         wp_register_script('mam-lb-plugin', $this->plugin_url . 'assets/js/mam-lb-plugin.js', array('jquery'));
         wp_enqueue_script('mam-lb-plugin');

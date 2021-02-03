@@ -32,133 +32,13 @@ class Resources implements ServiceInterface
         add_shortcode('mam-resources-listing', [$this, 'mam_resources_listing']);
         add_filter('gettext', array($this, 'custom_enter_title'));
 
-        // Admin Table
-        add_filter('manage_resources_posts_columns', array($this, 'set_custom_edit_resources_columns'));
-        add_action('manage_resources_posts_custom_column', array($this, 'custom_resources_column'), 10, 2);
-        add_filter('manage_edit-resources_sortable_columns', array($this, 'set_custom_resources_sortable_columns'));
-    }
-
-
-    /**
-     * Add columns to the clients admin table
-     */
-    public function set_custom_edit_resources_columns($columns)
-    {
-        unset($columns['date']);
-        unset($columns['title']);
-        $columns['title'] = __('Website URL');
-        $columns['contact'] = __('Contact Info');
-        $columns['da'] = __('DA');
-        $columns['dr'] = __('DR');
-        $columns['rd'] = __('RD');
-        $columns['tr'] = __('TR');
-        $columns['price'] = __('Price');
-        $columns['payment'] = __('Payment Method');
-        $columns['rating'] = __('Rating');
-        $columns['date'] = __('Date');
-        return $columns;
-    }
-
-    /**
-     * Add data to the client custom columns
-     */
-    public function custom_resources_column($column, $post_id)
-    {
-        switch ($column) {
-            case 'contact' :
-                $email = get_field('email', $post_id);
-                $name = get_field('contact_name', $post_id);
-                if (is_string($email)) {
-                    if (is_string($name)) {
-                        echo $name . ' <' . $email . '>';
-                    } else {
-                        echo $email;
-                    }
-                } else {
-                    _e('Unable to get contact email');
-                }
-
-                break;
-            case 'da' :
-                $da = get_field('da', $post_id);
-                if (is_string($da))
-                    echo $da;
-                else
-                    _e('Unable to get DA');
-                break;
-            case 'dr' :
-                $dr = get_field('dr', $post_id);
-                if (is_string($dr))
-                    echo $dr;
-                else
-                    _e('Unable to get DR');
-                break;
-            case 'rd' :
-                $rd = get_field('rd', $post_id);
-                if (is_string($rd))
-                    echo $rd;
-                else
-                    _e('Unable to get RD');
-                break;
-            case 'tr' :
-                $tr = get_field('tr', $post_id);
-                if (is_string($tr))
-                    echo $tr;
-                else
-                    _e('Unable to get TR');
-                break;
-            case 'price' :
-                $originaPrice = get_field('original_price', $post_id);
-                $finalePrice = get_field('price', $post_id);
-                $currency = get_field('currency', $post_id);
-                if (!$currency) {
-                    $currency = 'USD';
-                }
-                if (is_string($originaPrice)) {
-                    if (is_string($finalePrice)) {
-                        echo $finalePrice . ' ' . $currency;
-                    } else {
-                        echo $originaPrice . ' ' . $currency;
-                    }
-                } else {
-                    _e('Unable to get Original Price');
-                }
-                break;
-            case 'payment' :
-                $payment = get_field('payment_method', $post_id);
-                if (is_string($payment))
-                    echo $payment;
-                else
-                    _e('Unable to get Payment');
-                break;
-            case 'rating' :
-                $rating = get_field('rating', $post_id);
-                if (is_string($rating))
-                    echo $rating;
-                else
-                    _e('Unable to get Rating');
-                break;
-        }
-    }
-
-    /**
-     * Make columns in the clients admin table sortable
-     */
-    public function set_custom_resources_sortable_columns($columns)
-    {
-        $columns['contact'] = 'contact';
-        $columns['da'] = 'da';
-        $columns['dr'] = 'dr';
-        $columns['rd'] = 'rd';
-        $columns['tr'] = 'tr';
-        $columns['price'] = 'price';
-        $columns['payment'] = 'payment';
-        $columns['rating'] = 'rating';
-        return $columns;
     }
 
     /**
      * Change Add Title Text
+     * @param $input string the input name
+     * @return string
+     * @noinspection PhpUnused
      */
     function custom_enter_title($input)
     {
@@ -229,6 +109,8 @@ class Resources implements ServiceInterface
 
     /**
      * init post type template file single-resources.php
+     * @param $template string the template path
+     * @return string the template path
      */
     function init_resources_template($template)
     {
@@ -247,6 +129,8 @@ class Resources implements ServiceInterface
 
     /**
      * add resources archive template
+     * @param $template string the template path
+     * @return string the template path
      */
     public function archive_template($template)
     {
@@ -272,6 +156,25 @@ class Resources implements ServiceInterface
                 'key' => 'group_5fa363b4f1679',
                 'title' => 'Resource Details',
                 'fields' => array(
+                    array(
+                        'key' => 'field_5ffe5b1fba79a',
+                        'label' => 'IP Address',
+                        'name' => 'ip_address',
+                        'type' => 'text',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'maxlength' => '',
+                    ),
                     array(
                         'key' => 'field_5fa3692473acf',
                         'label' => 'Email',
@@ -394,10 +297,10 @@ class Resources implements ServiceInterface
                         'step' => '',
                     ),
                     array(
-                        'key' => 'field_5fa364dcbdb39',
-                        'label' => 'Currency',
-                        'name' => 'currency',
-                        'type' => 'select',
+                        'key' => 'field_5ffe5ae3ba796',
+                        'label' => 'PA',
+                        'name' => 'pa',
+                        'type' => 'number',
                         'instructions' => '',
                         'required' => 0,
                         'conditional_logic' => 0,
@@ -406,188 +309,91 @@ class Resources implements ServiceInterface
                             'class' => '',
                             'id' => '',
                         ),
-                        'choices' => array(
-                            'USD' => 'USD',
-                            'GBP' => 'GBP',
-                            'AUD' => 'AUD',
-                            'EUR' => 'EUR',
-                            '=========' => '=========',
-                            'AED' => 'AED',
-                            'AFN' => 'AFN',
-                            'ALL' => 'ALL',
-                            'AMD' => 'AMD',
-                            'ANG' => 'ANG',
-                            'AOA' => 'AOA',
-                            'ARS' => 'ARS',
-                            'AWG' => 'AWG',
-                            'AZN' => 'AZN',
-                            'BAM' => 'BAM',
-                            'BBD' => 'BBD',
-                            'BDT' => 'BDT',
-                            'BGN' => 'BGN',
-                            'BHD' => 'BHD',
-                            'BIF' => 'BIF',
-                            'BMD' => 'BMD',
-                            'BND' => 'BND',
-                            'BOB' => 'BOB',
-                            'BOV' => 'BOV',
-                            'BRL' => 'BRL',
-                            'BSD' => 'BSD',
-                            'BTN' => 'BTN',
-                            'BWP' => 'BWP',
-                            'BYN' => 'BYN',
-                            'BZD' => 'BZD',
-                            'CAD' => 'CAD',
-                            'CDF' => 'CDF',
-                            'CHE' => 'CHE',
-                            'CHF' => 'CHF',
-                            'CHW' => 'CHW',
-                            'CLF' => 'CLF',
-                            'CLP' => 'CLP',
-                            'CNY' => 'CNY',
-                            'COP' => 'COP',
-                            'COU' => 'COU',
-                            'CRC' => 'CRC',
-                            'CUC' => 'CUC',
-                            'CUP' => 'CUP',
-                            'CVE' => 'CVE',
-                            'CZK' => 'CZK',
-                            'DJF' => 'DJF',
-                            'DKK' => 'DKK',
-                            'DOP' => 'DOP',
-                            'DZD' => 'DZD',
-                            'EGP' => 'EGP',
-                            'ERN' => 'ERN',
-                            'ETB' => 'ETB',
-                            'FJD' => 'FJD',
-                            'FKP' => 'FKP',
-                            'GEL' => 'GEL',
-                            'GHS' => 'GHS',
-                            'GIP' => 'GIP',
-                            'GMD' => 'GMD',
-                            'GNF' => 'GNF',
-                            'GTQ' => 'GTQ',
-                            'GYD' => 'GYD',
-                            'HKD' => 'HKD',
-                            'HNL' => 'HNL',
-                            'HRK' => 'HRK',
-                            'HTG' => 'HTG',
-                            'HUF' => 'HUF',
-                            'IDR' => 'IDR',
-                            'ILS' => 'ILS',
-                            'INR' => 'INR',
-                            'IQD' => 'IQD',
-                            'IRR' => 'IRR',
-                            'ISK' => 'ISK',
-                            'JMD' => 'JMD',
-                            'JOD' => 'JOD',
-                            'JPY' => 'JPY',
-                            'KES' => 'KES',
-                            'KGS' => 'KGS',
-                            'KHR' => 'KHR',
-                            'KMF' => 'KMF',
-                            'KPW' => 'KPW',
-                            'KRW' => 'KRW',
-                            'KWD' => 'KWD',
-                            'KYD' => 'KYD',
-                            'KZT' => 'KZT',
-                            'LAK' => 'LAK',
-                            'LBP' => 'LBP',
-                            'LKR' => 'LKR',
-                            'LRD' => 'LRD',
-                            'LSL' => 'LSL',
-                            'LYD' => 'LYD',
-                            'MAD' => 'MAD',
-                            'MDL' => 'MDL',
-                            'MGA' => 'MGA',
-                            'MKD' => 'MKD',
-                            'MMK' => 'MMK',
-                            'MNT' => 'MNT',
-                            'MOP' => 'MOP',
-                            'MRU[11]' => 'MRU[11]',
-                            'MUR' => 'MUR',
-                            'MVR' => 'MVR',
-                            'MWK' => 'MWK',
-                            'MXN' => 'MXN',
-                            'MXV' => 'MXV',
-                            'MYR' => 'MYR',
-                            'MZN' => 'MZN',
-                            'NAD' => 'NAD',
-                            'NGN' => 'NGN',
-                            'NIO' => 'NIO',
-                            'NOK' => 'NOK',
-                            'NPR' => 'NPR',
-                            'NZD' => 'NZD',
-                            'OMR' => 'OMR',
-                            'PAB' => 'PAB',
-                            'PEN' => 'PEN',
-                            'PGK' => 'PGK',
-                            'PHP' => 'PHP',
-                            'PKR' => 'PKR',
-                            'PLN' => 'PLN',
-                            'PYG' => 'PYG',
-                            'QAR' => 'QAR',
-                            'RON' => 'RON',
-                            'RSD' => 'RSD',
-                            'RUB' => 'RUB',
-                            'RWF' => 'RWF',
-                            'SAR' => 'SAR',
-                            'SBD' => 'SBD',
-                            'SCR' => 'SCR',
-                            'SDG' => 'SDG',
-                            'SEK' => 'SEK',
-                            'SGD' => 'SGD',
-                            'SHP' => 'SHP',
-                            'SLL' => 'SLL',
-                            'SOS' => 'SOS',
-                            'SRD' => 'SRD',
-                            'SSP' => 'SSP',
-                            'STN[13]' => 'STN[13]',
-                            'SVC' => 'SVC',
-                            'SYP' => 'SYP',
-                            'SZL' => 'SZL',
-                            'THB' => 'THB',
-                            'TJS' => 'TJS',
-                            'TMT' => 'TMT',
-                            'TND' => 'TND',
-                            'TOP' => 'TOP',
-                            'TRY' => 'TRY',
-                            'TTD' => 'TTD',
-                            'TWD' => 'TWD',
-                            'TZS' => 'TZS',
-                            'UAH' => 'UAH',
-                            'UGX' => 'UGX',
-                            'USN' => 'USN',
-                            'UYI' => 'UYI',
-                            'UYU' => 'UYU',
-                            'UYW' => 'UYW',
-                            'UZS' => 'UZS',
-                            'VES' => 'VES',
-                            'VND' => 'VND',
-                            'VUV' => 'VUV',
-                            'WST' => 'WST',
-                            'XAF' => 'XAF',
-                            'XAG' => 'XAG',
-                            'XAU' => 'XAU',
-                            'XBA' => 'XBA',
-                            'XBB' => 'XBB',
-                            'XBC' => 'XBC',
-                            'XBD' => 'XBD',
-                            'XCD' => 'XCD',
-                            'XDR' => 'XDR',
-                            'XOF' => 'XOF',
-                            'XPD' => 'XPD',
-                            'XPF' => 'XPF',
-                            'XPT' => 'XPT',
-                            'XSU' => 'XSU',
-                            'XTS' => 'XTS',
-                            'XUA' => 'XUA',
-                            'XXX' => 'XXX',
-                            'YER' => 'YER',
-                            'ZAR' => 'ZAR',
-                            'ZMW' => 'ZMW',
-                            'ZWL' => 'ZWL',
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe5af4ba797',
+                        'label' => 'TF',
+                        'name' => 'tf',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
                         ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe5afaba798',
+                        'label' => 'CF',
+                        'name' => 'cf',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe5b24ba79b',
+                        'label' => 'Organic Keywords',
+                        'name' => 'organic_keywords',
+                        'type' => 'number',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'min' => '',
+                        'max' => '',
+                        'step' => '',
+                    ),
+                    [
+                        'key' => 'field_5fa364dcbdb39',
+                        'label' => 'Currency',
+                        'name' => 'currency',
+                        'type' => 'select',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => [
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ],
+                        'choices' => Config::getInstance()->currencies,
                         'default_value' => false,
                         'allow_null' => 0,
                         'multiple' => 0,
@@ -595,7 +401,7 @@ class Resources implements ServiceInterface
                         'return_format' => 'value',
                         'ajax' => 0,
                         'placeholder' => '',
-                    ),
+                    ],
                     array(
                         'key' => 'field_5fa3698573ad5',
                         'label' => 'Original Price',
@@ -770,8 +576,8 @@ set the price if there is a special price.',
                     ),
                     array(
                         'key' => 'field_5fa3642bbdb35',
-                        'label' => 'Comments',
-                        'name' => 'comments',
+                        'label' => 'Notes',
+                        'name' => 'notes',
                         'type' => 'text',
                         'instructions' => '',
                         'required' => 0,
@@ -853,6 +659,49 @@ set the price if there is a special price.',
                         'ajax' => 0,
                         'placeholder' => '',
                     ),
+                    array(
+                        'key' => 'field_5ffe5abeba794',
+                        'label' => 'Status',
+                        'name' => 'status',
+                        'type' => 'select',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'choices' => array(
+                            'Confirmed' => 'Confirmed',
+                            'Do not use' => 'Do not use',
+                            'Raw' => 'Raw',
+                        ),
+                        'default_value' => false,
+                        'allow_null' => 0,
+                        'multiple' => 0,
+                        'ui' => 0,
+                        'return_format' => 'value',
+                        'ajax' => 0,
+                        'placeholder' => '',
+                    ),
+                    array(
+                        'key' => 'field_5ffe5b0aba799',
+                        'label' => 'Metrics Update Date',
+                        'name' => 'metrics_update_date',
+                        'type' => 'date_picker',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'display_format' => 'Y-m-d',
+                        'return_format' => 'Y-m-d',
+                        'first_day' => 1,
+                    ),
                 ),
                 'location' => array(
                     array(
@@ -912,7 +761,7 @@ set the price if there is a special price.',
     public function filtered_posts($filters)
     {
         $meta_query = array();
-        if (isset($filters['da']) & $filters['da'] != '') {
+        if (isset($filters['da']) && $filters['da'] != '') {
             $meta_query[] = [
                 'key' => 'da',
                 'value' => $filters['da'],
@@ -921,7 +770,7 @@ set the price if there is a special price.',
             ];
         }
 
-        if (isset($filters['da1']) & $filters['da1'] != '') {
+        if (isset($filters['da1']) && $filters['da1'] != '') {
             $meta_query[] = [
                 'key' => 'da',
                 'value' => $filters['da1'],
@@ -930,7 +779,7 @@ set the price if there is a special price.',
             ];
         }
 
-        if (isset($filters['dr']) & $filters['dr'] != '') {
+        if (isset($filters['dr']) && $filters['dr'] != '') {
             $meta_query[] = [
                 'key' => 'dr',
                 'value' => $filters['dr'],
@@ -939,7 +788,7 @@ set the price if there is a special price.',
             ];
         }
 
-        if (isset($filters['dr1']) & $filters['dr1'] != '') {
+        if (isset($filters['dr1']) && $filters['dr1'] != '') {
             $meta_query[] = [
                 'key' => 'dr',
                 'value' => $filters['dr1'],
@@ -948,7 +797,7 @@ set the price if there is a special price.',
             ];
         }
 
-        if (isset($filters['rd']) & $filters['rd'] != '') {
+        if (isset($filters['rd']) && $filters['rd'] != '') {
             $meta_query[] = [
                 'key' => 'rd',
                 'value' => $filters['rd'],
@@ -957,7 +806,7 @@ set the price if there is a special price.',
             ];
         }
 
-        if (isset($filters['tr']) & $filters['tr'] != '') {
+        if (isset($filters['tr']) && $filters['tr'] != '') {
             $meta_query[] = [
                 'key' => 'tr',
                 'value' => $filters['tr'],
@@ -965,7 +814,8 @@ set the price if there is a special price.',
                 'type' => 'NUMERIC',
             ];
         }
-        if (isset($filters['sectors']) & !empty($filters['sectors']))
+        $tax_query = array();
+        if (isset($filters['sectors']) && !empty($filters['sectors']))
             $tax_query = array(
                 array(
                     'taxonomy' => 'sector',
@@ -975,7 +825,7 @@ set the price if there is a special price.',
             );
 
         $resourceIDs = array();
-        if (isset($filters['client']) & !empty($filters['client'])){
+        if (isset($filters['client']) && !empty($filters['client'])){
             $orders = apply_filters('mam-orders-filtered-posts', $filters);
             if ($orders->have_posts()) {
                 while ($orders->have_posts()) {

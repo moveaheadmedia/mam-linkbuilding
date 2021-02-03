@@ -16,6 +16,8 @@
     }
   },
   "require": {
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "ext-json": "*",
+    "parsecsv/php-parsecsv": "^1.0@dev"
   }
 }

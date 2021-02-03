@@ -251,7 +251,7 @@ class Clients implements ServiceInterface
         $meta_query = [];
         $meta_query['relation'] = 'AND';
 
-        if ($filters['agency'] != '') {
+        if (isset($filters['agency']) && $filters['agency'] != '') {
             $meta_query[] = [
                 'key' => 'agency',
                 'value' => $filters['agency'],

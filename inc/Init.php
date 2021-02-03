@@ -4,6 +4,7 @@
 namespace MAM\Plugin;
 
 
+use MAM\Plugin\Services\Admin\Users;
 use MAM\Plugin\Services\Admin\Export;
 use MAM\Plugin\Services\Admin\Import;
 use MAM\Plugin\Services\Admin\Orders;
@@ -14,6 +15,8 @@ use MAM\Plugin\Services\Admin\Editors;
 use MAM\Plugin\Services\Admin\Agencies;
 use MAM\Plugin\Services\Admin\AddOrder;
 use MAM\Plugin\Services\Admin\Resources;
+use MAM\Plugin\Services\Admin\ImportOrders;
+use MAM\Plugin\Services\Admin\ImportResources;
 
 final class Init
 {
@@ -24,6 +27,7 @@ final class Init
     public static function get_services()
     {
         return [
+            Users::class,
             Export::class,
             Import::class,
             Orders::class,
@@ -33,7 +37,9 @@ final class Init
             Editors::class,
             Agencies::class,
             AddOrder::class,
-            Resources::class
+            Resources::class,
+            ImportOrders::class,
+            ImportResources::class,
         ];
     }
 
