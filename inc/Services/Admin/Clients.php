@@ -32,8 +32,8 @@ class Clients implements ServiceInterface
 
         // Admin table
         add_filter('manage_client_posts_columns', array($this, 'set_custom_edit_client_columns'));
-        add_action( 'manage_client_posts_custom_column' , array($this, 'custom_client_column'), 10, 2 );
-        add_filter( 'manage_edit-client_sortable_columns', array($this, 'set_custom_client_sortable_columns') );
+        add_action('manage_client_posts_custom_column', array($this, 'custom_client_column'), 10, 2);
+        add_filter('manage_edit-client_sortable_columns', array($this, 'set_custom_client_sortable_columns'));
     }
 
     /**
@@ -113,18 +113,20 @@ class Clients implements ServiceInterface
     /**
      * Add columns to the clients admin table
      */
-    public function set_custom_edit_client_columns($columns){
-        unset( $columns['date'] );
-        $columns['website'] = __( 'Website' );
-        $columns['agency'] = __( 'Agency' );
-        $columns['date'] = __( 'Date' );
+    public function set_custom_edit_client_columns($columns)
+    {
+        unset($columns['date']);
+        $columns['website'] = __('Website');
+        $columns['agency'] = __('Agency');
+        $columns['date'] = __('Date');
         return $columns;
     }
 
     /**
      * Make columns in the clients admin table sortable
      */
-    public function set_custom_client_sortable_columns($columns){
+    public function set_custom_client_sortable_columns($columns)
+    {
         $columns['agency'] = 'agency';
         $columns['website'] = 'website';
         return $columns;
@@ -133,22 +135,23 @@ class Clients implements ServiceInterface
     /**
      * Add data to the client custom columns
      */
-    public function custom_client_column($column, $post_id){
-        switch ( $column ) {
+    public function custom_client_column($column, $post_id)
+    {
+        switch ($column) {
             case 'website' :
-                $website = get_field('website',  $post_id);
-                if ( is_string( $website ) )
+                $website = get_field('website', $post_id);
+                if (is_string($website))
                     echo $website;
                 else
-                    _e( 'Unable to get website' );
+                    _e('Unable to get website');
                 break;
             case 'agency' :
-                $agency = get_field('agency',  $post_id);
+                $agency = get_field('agency', $post_id);
                 $agency_name = get_the_title($agency);
-                if ( is_string( $agency_name ) )
+                if (is_string($agency_name))
                     echo $agency_name;
                 else
-                    _e( 'Unable to get agency' );
+                    _e('Unable to get agency');
                 break;
         }
     }
@@ -267,6 +270,41 @@ class Clients implements ServiceInterface
         );
 
         // query
-        return new WP_Query($args);
+        $query = new WP_Query($args);
+        //wp_reset_query();
+        return $query;
+    }
+
+    /**
+     * init property post type info (to be called by wordpress)
+     * @param $client_id int the client id
+     * @param $resource_url string the resource url
+     *
+     * @return bool true if the resource already used for this client, false if the resource is not used
+     */
+    public static function check_client_resource($client_id, $resource_url)
+    {
+        $filters = array();
+        $filters['client'] = $client_id;
+        /**
+         * @var $orders WP_Query
+         */
+        $orders = apply_filters('mam-orders-filtered-posts', $filters);
+        if ($orders->have_posts()) {
+            while ($orders->have_posts()) {
+                $orders->the_post();
+                $_order_res = get_field('resource_url', get_the_ID());
+                $_order_res = str_replace('https://', '', $_order_res);
+                $_order_res = str_replace('http://', '', $_order_res);
+                $_order_res = strtolower($_order_res);
+                $resource_url = str_replace('https://', '', $resource_url);
+                $resource_url = str_replace('http://', '', $resource_url);
+                $resource_url = strtolower($resource_url);
+                if($_order_res == $resource_url){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

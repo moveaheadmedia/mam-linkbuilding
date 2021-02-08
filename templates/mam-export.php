@@ -91,6 +91,7 @@ if (isset($_GET['export'])) {
                     "Date Paid" => get_field('date_paid', $id),
                     "USD Price" => get_field('usd_price', $id),
                     "THB Price" => get_field('thb_price', $id),
+                    "Checked" => get_field('checked', $id),
                     "Status" => get_field('status', $id),
                     "Start Date" => get_field('start_date', $id),
                     "Complete Date" => get_field('complete_date', $id),

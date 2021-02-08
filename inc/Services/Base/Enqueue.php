@@ -57,6 +57,9 @@ class Enqueue implements ServiceInterface
         wp_register_style('jquery-ui-theme', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/theme.min.css');
         wp_enqueue_style('jquery-ui-theme');
 
+        wp_register_style('bootstrap-daterangepicker', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.css');
+        wp_enqueue_style('bootstrap-daterangepicker');
+
         wp_register_style('mam-lb-plugin', $this->plugin_url . 'assets/css/mam-lb-plugin.css');
         wp_enqueue_style('mam-lb-plugin');
     }
@@ -78,6 +81,9 @@ class Enqueue implements ServiceInterface
 
         wp_register_script('bootstrap', 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js', array('jquery', 'popper'));
         wp_enqueue_script('bootstrap');
+
+        wp_register_script('moment', 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js');
+        wp_enqueue_script('moment');
 
         wp_register_script('bootstrap-select', 'https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js', array('jquery', 'bootstrap', 'popper'));
         wp_enqueue_script('bootstrap-select');
@@ -114,6 +120,12 @@ class Enqueue implements ServiceInterface
 
         wp_register_script('jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js', array('jquery'));
         wp_enqueue_script('jquery-ui');
+
+        wp_register_script('jquery-fullscreen-plugin', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-fullscreen-plugin/1.1.5/jquery.fullscreen-min.js', array('jquery'));
+        wp_enqueue_script('jquery-fullscreen-plugin');
+
+        wp_register_script('bootstrap-daterangepicker', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js', array('jquery', 'moment', 'bootstrap', 'popper'));
+        wp_enqueue_script('bootstrap-daterangepicker');
 
         wp_register_script('mam-lb-plugin', $this->plugin_url . 'assets/js/mam-lb-plugin.js', array('jquery'));
         wp_enqueue_script('mam-lb-plugin');

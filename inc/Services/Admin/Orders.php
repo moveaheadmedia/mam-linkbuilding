@@ -407,7 +407,7 @@ class Orders implements ServiceInterface
                         'key' => 'field_5ffe9a45b54dc',
                         'label' => 'Resource URL',
                         'name' => 'resource_url',
-                        'type' => 'url',
+                        'type' => 'text',
                         'instructions' => '',
                         'required' => 0,
                         'conditional_logic' => 0,
@@ -994,6 +994,15 @@ set the price if there is a special price.',
             ];
         }
 
+        if (isset($filters['date1']) && $filters['date1'] != '' && isset($filters['date2']) && $filters['date2'] != '') {
+            $meta_query[] = [
+                'key' => 'start_date',
+                'value' => array(date('y-m-d', strtotime($filters['date1'])), date('y-m-d', strtotime($filters['date2']))),
+                'compare' => 'BETWEEN',
+                'type' => 'DATE',
+            ];
+        }
+
         if (isset($filters['agency'])) {
             /**
              * @var $clients WP_Query
@@ -1016,15 +1025,20 @@ set the price if there is a special price.',
             ];
         }
 
+
+
         // args
         $args = array(
             'numberposts' => -1,
+            'posts_per_page' => -1,
             'post_type' => 'lborder',
             'meta_query' => $meta_query
         );
 
         // query
-        return new WP_Query($args);
+        $query = new WP_Query($args);
+        //wp_reset_query();
+        return $query;
     }
 
     /**
@@ -1071,11 +1085,18 @@ set the price if there is a special price.',
         if (isset($orderData['THB Price'])) {
             update_field('thb_price', $orderData['THB Price'], $orderID);
         }
-        if (isset($orderData['Status'])) {
-            update_field('status', $orderData['Status'], $orderID);
+        if (isset($orderData['Checked']) && $orderData['Checked'] != '') {
+            update_field('checked', $orderData['Checked'], $orderID);
         }
-        if (isset($orderData['Start Date'])) {
+        if (isset($orderData['Status']) && $orderData['Status'] != '') {
+            update_field('status', $orderData['Status'], $orderID);
+        }else{
+            update_field('status', 'Ongoing', $orderID);
+        }
+        if (isset($orderData['Start Date']) && $orderData['Start Date'] != '') {
             update_field('start_date', $orderData['Start Date'], $orderID);
+        }else{
+            update_field('start_date', date('Y-m-d'), $orderID);
         }
         if (isset($orderData['Complete Date'])) {
             update_field('complete_date', $orderData['Complete Date'], $orderID);

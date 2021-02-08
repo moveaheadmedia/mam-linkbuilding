@@ -43,6 +43,16 @@ if (file_exists($mam_file)) {
 // check for errors in the CSV file
 $res = array();
 foreach ($mam_csv as $item){
+    $sectors = array();
+    $count = 100;
+    for($i = 1; $i <= $count; $i++){
+        if(isset($item['Sector'.$i])){
+            $sectors[] = $item['Sector'.$i];
+        }else{
+            break;
+        }
+    }
+    $item['Sectors'] = implode(', ', $sectors);
     $res[] = array_map('trim', $item);
 }
 setLines($res);
@@ -57,22 +67,25 @@ if ($mam_action == 'Import the file') {
     if (!empty($mam_errorLines)) {
         $check = false;
     }
+
     $importedResources = 0;
-    foreach ($mam_csv as $row) {
-        $resourceData = $row;
-        // $mam_updatingLines and $mam_newLines
-        $id = post_exists($resourceData['URL'], '', '', 'resources');
-        if ($id) {
-            update_resource($id, $resourceData);
-        } else {
-            $id = wp_insert_post(array(
-                'post_title' => $resourceData['URL'],
-                'post_type' => 'resources',
-                'post_status' => 'publish',
-            ));
-            update_resource($id, $resourceData);
+    if($check){
+        foreach ($res as $row) {
+            $resourceData = $row;
+            // $mam_updatingLines and $mam_newLines
+            $id = post_exists($resourceData['URL'], '', '', 'resources');
+            if ($id) {
+                update_resource($id, $resourceData);
+            } else {
+                $id = wp_insert_post(array(
+                    'post_title' => $resourceData['URL'],
+                    'post_type' => 'resources',
+                    'post_status' => 'publish',
+                ));
+                update_resource($id, $resourceData);
+            }
+            $importedResources = $importedResources + 1;
         }
-        $importedResources = $importedResources + 1;
     }
 }
 
@@ -119,8 +132,9 @@ if ($mam_action == 'Import the file') {
                 echo '<h2>Please fix the errors in the file before you import.</h2>';
                 $check = false;
             }
-
-            echo '<h3>Imported Resources: (' . $importedResources . ')</h3>';
+            if($check){
+                echo '<h3>Imported Resources: (' . $importedResources . ')</h3>';
+            }
         }
         ?>
     </div>
@@ -130,7 +144,9 @@ if ($mam_action == 'Import the file') {
 
 function update_resource($id, $data)
 {
-    update_field('email', $data['Email'], $id);
+    if (isset($data['Email'])) {
+        update_field('email', $data['Email'], $id);
+    }
     if (isset($data['IP Address'])) {
         update_field('ip_address', $data['IP Address'], $id);
     }
@@ -263,9 +279,12 @@ function setLines($lines)
         if (isset($line['Sectors'])) {
             $sectors = explode(', ', $line['Sectors']);
             foreach ($sectors as $sector) {
+                if($sector == ''){
+                    continue;
+                }
                 if (!term_exists($sector, 'sector')) {
-                    if (!in_array($sector, $mam_new_sectors)) {
-                        $mam_new_sectors[] = $sector;
+                    if (!in_array($sector, $mam_errorLines)) {
+                        $mam_errorLines[] = 'Sector Does not Exist: '.$sector;
                     }
                 }
             }

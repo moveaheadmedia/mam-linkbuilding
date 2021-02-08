@@ -134,6 +134,11 @@ get_header(); ?>
                             } else {
                                 echo '-';
                             } ?></li>
+                        <li><b>Checked:</b> <?php if (get_field('checked', $id)) {
+                                echo get_field('checked', $id);
+                            } else {
+                                echo '-';
+                            } ?></li>
                         <li><b>Status:</b> <?php if (get_field('status', $id)) {
                                 echo get_field('status', $id);
                             } else {

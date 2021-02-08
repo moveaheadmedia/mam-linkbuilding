@@ -14,6 +14,7 @@ class Users implements ServiceInterface
         add_action('plugins_loaded', [$this, 'add_custom_fields']);
         add_action('admin_post_resource_columns_hook', [$this, 'handle_resource_column']);
         add_action('admin_post_order_columns_hook', [$this, 'order_columns_hook']);
+        add_action('admin_post_resource_filter_hook', [$this, 'resource_filter_hook']);
 
     }
 
@@ -27,6 +28,13 @@ class Users implements ServiceInterface
     public static function order_columns_hook()
     {
         update_field('orders_columns', $_POST['resource-order'], 'user_' . get_current_user_id());
+        wp_redirect($_POST['current-page']);
+
+    }
+
+    public static function resource_filter_hook()
+    {
+        update_field('filters', json_encode($_POST), 'user_' . get_current_user_id());
         wp_redirect($_POST['current-page']);
 
     }
@@ -61,6 +69,25 @@ class Users implements ServiceInterface
                         'key' => 'field_5fff9bf4ecde9',
                         'label' => 'Orders',
                         'name' => 'orders_columns',
+                        'type' => 'text',
+                        'instructions' => '',
+                        'required' => 0,
+                        'conditional_logic' => 0,
+                        'wrapper' => array(
+                            'width' => '',
+                            'class' => '',
+                            'id' => '',
+                        ),
+                        'default_value' => '',
+                        'placeholder' => '',
+                        'prepend' => '',
+                        'append' => '',
+                        'maxlength' => '',
+                    ),
+                    array(
+                        'key' => 'field_6020b834c6ad1',
+                        'label' => 'Filters',
+                        'name' => 'filters',
                         'type' => 'text',
                         'instructions' => '',
                         'required' => 0,

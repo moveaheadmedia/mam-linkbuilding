@@ -1,6 +1,103 @@
-.responsive-table{
+#main {
+    position: static !important;
+}
+
+.responsive-table {
     padding: 15px;
 }
-table tr th:first-child, table tr td:first-child{
+
+table tr th:first-child, table tr td:first-child {
     padding-left: 10px !important;
+}
+
+.connectedSortable {
+    background-color: #ccc;
+    margin: 0;
+    padding: 10px;
+    list-style: none;
+}
+
+li.ui-state-default.ui-sortable-handle {
+    padding: 5px 10px;
+}
+
+.dt-button {
+    border: none;
+    padding: 5px 10px;
+    color: #fff;
+}
+
+tfoot input[type="text"] {
+    max-width: 85px;
+}
+
+.dataTables_wrapper {
+    max-width: 100%;
+    overflow: auto;
+}
+
+.existfullscreen {
+    display: none;
+}
+
+.fullscreen .enterfullscreen {
+    display: none;
+}
+
+.fullscreen .existfullscreen {
+    display: block;
+}
+
+.responsive-table {
+    padding: 0;
+}
+
+.fullscreen {
+    position: absolute;
+    top: 0;
+    background-color: #fff;
+    z-index: 9999;
+    width: 100%;
+    overflow: auto;
+    height: 96vh;
+    left: 0;
+}
+
+.fullscreen .dataTables_wrapper {
+    max-height: 92vh;
+}
+
+table.dataTable tbody th, table.dataTable tbody td {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+table.dataTable tbody th.active, table.dataTable tbody td.active {
+    white-space: normal;
+    text-overflow: initial;
+}
+
+.bootstrap-select .dropdown-toggle .filter-option, .bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:active, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover {
+    font-size: 16px;
+    padding: 5px 10px;
+}
+
+.bootstrap-select .dropdown-menu li a {
+    font-size: 16px;
+    padding: 5px 10px;
+}
+
+.av-list .dropdown.bootstrap-select.show-tick {
+    width: 100%;
+}
+Gam
+.btn-group-vertical > .btn, .btn-group > .btn {
+    font-size: 16px;
+}
+
+div#bs-select-1 {
+    max-height: 400px !important;
 }

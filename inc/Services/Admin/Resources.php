@@ -850,4 +850,32 @@ set the price if there is a special price.',
         // query
         return new WP_Query($args);
     }
+
+    /**
+     * Check if the IP Address is used with multiple resources
+     * @param $ip_address string the IP Address that need to be checked if duplicated or not
+     * @return false bool true if duplicated false if not
+     */
+    public static function resource_ip_duplicated($ip_address){
+        $meta_query[] = [
+            'key' => 'ip_address',
+            'value' => $ip_address,
+            'compare' => '='
+        ];
+
+        $args = array(
+            'numberposts' => '-1',
+            'posts_per_page' => '-1',
+            'posts_per_archive_page' => '-1',
+            'post_type' => 'resources',
+            'meta_query' => $meta_query,
+            'operator' => 'EXISTS'
+        );
+
+        $query = new WP_Query($args);
+        if($query->post_count > 1){
+            return true;
+        }
+        return false;
+    }
 }

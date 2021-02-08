@@ -162,7 +162,7 @@ get_header(); ?>
                 $check = false;
             }
             if ($check) {
-                echo '<h3>Imported Orders: (' . ($importedOrders) . ')</h3>';
+                echo '<h3>Imported Orders: (' . ($importedOrders -1) . ')</h3>';
             }
         }
 
@@ -233,7 +233,7 @@ function setLines($lines)
         foreach ($lines as $_line) {
             if ($line['ID'] == $_line['ID']) {
                 if ($_count != $count) {
-                    $mam_duplicatedLines[] = $count . ':' . $_count;
+                    $mam_duplicatedLines[] = ($count + 1). ':' . ($_count + 1);
                 }
             }
 
@@ -241,7 +241,7 @@ function setLines($lines)
         }
 
         // $mam_new_sectors
-        if (($line['Sectors'])) {
+        if (isset($line['Sectors']) && $line['Sectors'] != '') {
             $sectors = explode(', ', $line['Sectors']);
             foreach ($sectors as $sector) {
                 if (!term_exists($sector, 'sector')) {
