@@ -93,11 +93,22 @@ table.dataTable tbody th.active, table.dataTable tbody td.active {
 .av-list .dropdown.bootstrap-select.show-tick {
     width: 100%;
 }
-Gam
+
 .btn-group-vertical > .btn, .btn-group > .btn {
     font-size: 16px;
 }
 
-div#bs-select-1 {
+div#bs-select-1, .inner.show {
     max-height: 400px !important;
+}
+
+div#DataTables_Table_0_processing {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    right: auto;
+    margin: 0;
+    padding-top: 50%;
 }

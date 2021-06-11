@@ -15,6 +15,7 @@ use MAM\Plugin\Services\Admin\Editors;
 use MAM\Plugin\Services\Admin\Agencies;
 use MAM\Plugin\Services\Admin\AddOrder;
 use MAM\Plugin\Services\Admin\Resources;
+use MAM\Plugin\Services\Admin\DataLoader;
 use MAM\Plugin\Services\Admin\ImportOrders;
 use MAM\Plugin\Services\Admin\ImportResources;
 
@@ -38,6 +39,7 @@ final class Init
             Agencies::class,
             AddOrder::class,
             Resources::class,
+            DataLoader::class,
             ImportOrders::class,
             ImportResources::class,
         ];

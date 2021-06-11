@@ -28,6 +28,7 @@ class Resources implements ServiceInterface
         add_filter('single_template', array($this, 'init_resources_template'));
         add_filter('template_include', array($this, 'archive_template'));
         add_filter('mam-resources-filtered-posts', array($this, 'filtered_posts'));
+        add_filter('mam-resources-filtered-posts-ids', array($this, 'filtered_posts_ids'));
         add_action('acf/init', array($this, 'add_resources_custom_fields'));
         add_shortcode('mam-resources-listing', [$this, 'mam_resources_listing']);
         add_filter('gettext', array($this, 'custom_enter_title'));
@@ -760,6 +761,18 @@ set the price if there is a special price.',
      */
     public function filtered_posts($filters)
     {
+        if(!isset($filters['start'])){
+            $filters['start'] = 0;
+        }
+        if(!isset($filters['length'])){
+            $filters['length'] = -1;
+        }
+        if(!isset($filters['order']['field'])){
+            $filters['order']['field'] = 'date';
+        }
+        if(!isset($filters['order']['dir'])){
+            $filters['order']['dir'] = 'DESC';
+        }
         $meta_query = array();
         if (isset($filters['da']) && $filters['da'] != '') {
             $meta_query[] = [
@@ -797,6 +810,24 @@ set the price if there is a special price.',
             ];
         }
 
+        if (isset($filters['price']) && $filters['price'] != '') {
+            $meta_query[] = [
+                'key' => 'original_price',
+                'value' => $filters['price'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['price1']) && $filters['price1'] != '') {
+            $meta_query[] = [
+                'key' => 'original_price',
+                'value' => $filters['price1'],
+                'compare' => '<=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
         if (isset($filters['rd']) && $filters['rd'] != '') {
             $meta_query[] = [
                 'key' => 'rd',
@@ -814,6 +845,22 @@ set the price if there is a special price.',
                 'type' => 'NUMERIC',
             ];
         }
+
+        $title_filter = '';
+        if(isset($filters['search'])){
+            foreach ($filters['search'] as $search){
+                if($search['name'] == 'title'){
+                    $title_filter = $search['value'];
+                    continue;
+                }
+                $meta_query[] = [
+                    'key' => $search['name'],
+                    'value' => $search['value'],
+                    'compare' => 'LIKE'
+                ];
+            }
+        }
+
         $tax_query = array();
         if (isset($filters['sectors']) && !empty($filters['sectors']))
             $tax_query = array(
@@ -837,18 +884,176 @@ set the price if there is a special price.',
 
         // args
         $args = array(
-            'numberposts' => '-1',
-            'posts_per_page' => '-1',
-            'posts_per_archive_page' => '-1',
+            'depth'          => 1,
+            'offset'          => $filters['start'],
+            'posts_per_page' => $filters['length'],
             'post_type' => 'resources',
             'meta_query' => $meta_query,
             'tax_query' => $tax_query,
             'operator' => 'EXISTS',
             'post__not_in' => $resourceIDs,
+            'fields' => 'ids',
+            'no_found_rows' => true,
         );
+        if($title_filter){
+            $args['s'] = $title_filter;
+        }
 
+
+        if($filters['order']['field'] == 'date' || $filters['order']['field'] == 'title'){
+            $args['orderby'] = $filters['order']['field'];
+        }else{
+            $args['orderby'] = 'meta_value';
+            $args['meta_key'] = $filters['order']['field'];
+        }
+        $args['order'] = $filters['order']['dir'];
+
+        //add_filter( 'posts_where', 'mam_title_filter', 10, 2 );
+        $the_query = new WP_Query($args);
+        //remove_filter( 'posts_where', 'mam_title_filter', 10);
+
+        wp_reset_query();
+        return $the_query;
+    }
+
+    /**
+     * Get the properties filtered ids
+     * @param $filters array the list of filters
+     * @return WP_Query
+     */
+    public function filtered_posts_ids($filters)
+    {
+        $filters['start'] = 0;
+        $filters['length'] = -1;
+        $meta_query = array();
+        if (isset($filters['da']) && $filters['da'] != '') {
+            $meta_query[] = [
+                'key' => 'da',
+                'value' => $filters['da'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['da1']) && $filters['da1'] != '') {
+            $meta_query[] = [
+                'key' => 'da',
+                'value' => $filters['da1'],
+                'compare' => '<=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['dr']) && $filters['dr'] != '') {
+            $meta_query[] = [
+                'key' => 'dr',
+                'value' => $filters['dr'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['dr1']) && $filters['dr1'] != '') {
+            $meta_query[] = [
+                'key' => 'dr',
+                'value' => $filters['dr1'],
+                'compare' => '<=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['price']) && $filters['price'] != '') {
+            $meta_query[] = [
+                'key' => 'original_price',
+                'value' => $filters['price'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['price1']) && $filters['price1'] != '') {
+            $meta_query[] = [
+                'key' => 'original_price',
+                'value' => $filters['price1'],
+                'compare' => '<=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['rd']) && $filters['rd'] != '') {
+            $meta_query[] = [
+                'key' => 'rd',
+                'value' => $filters['rd'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        if (isset($filters['tr']) && $filters['tr'] != '') {
+            $meta_query[] = [
+                'key' => 'tr',
+                'value' => $filters['tr'],
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+        }
+
+        $title_filter = '';
+        if(isset($filters['search'])){
+            foreach ($filters['search'] as $search){
+                if($search['name'] == 'title'){
+                    $title_filter = $search['value'];
+                    continue;
+                }
+                $meta_query[] = [
+                    'key' => $search['name'],
+                    'value' => $search['value'],
+                    'compare' => 'LIKE'
+                ];
+            }
+        }
+
+        $tax_query = array();
+        if (isset($filters['sectors']) && !empty($filters['sectors']))
+            $tax_query = array(
+                array(
+                    'taxonomy' => 'sector',
+                    'terms' => $filters['sectors'],
+                    'field' => 'term_id',
+                )
+            );
+
+        $resourceIDs = array();
+        if (isset($filters['client']) && !empty($filters['client'])){
+            $orders = apply_filters('mam-orders-filtered-posts', $filters);
+            if ($orders->have_posts()) {
+                while ($orders->have_posts()) {
+                    $orders->the_post();
+                    $resourceIDs[] = get_field('resource', get_the_ID());
+                }
+            }
+        }
+
+        // args
+        $args = array(
+            'depth'          => 1,
+            'offset'          => $filters['start'],
+            'posts_per_page' => $filters['length'],
+            'post_type' => 'resources',
+            'meta_query' => $meta_query,
+            'tax_query' => $tax_query,
+            'operator' => 'EXISTS',
+            'post__not_in' => $resourceIDs,
+            'fields' => 'ids',
+            'no_found_rows' => true,
+        );
+        if($title_filter){
+            $args['s'] = $title_filter;
+        }
         // query
-        return new WP_Query($args);
+        $the_query = new WP_Query($args);
+        wp_reset_query();
+        return $the_query;
     }
 
     /**
@@ -875,6 +1080,146 @@ set the price if there is a special price.',
         $query = new WP_Query($args);
         if($query->post_count > 1){
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get the meta field name by column name
+     * @param $column_name string the column name
+     * @return string the meta name
+     */
+    public static function get_filed_name_by_column_name($column_name)
+    {
+        switch ($column_name) {
+            case "Website":
+                return 'title';
+            case 'IP Address':
+                return 'ip_address';
+            case 'Other Info':
+                return 'other_info';
+            case 'Contact / Email':
+                return 'contact__email';
+            case 'Social Media':
+                return 'social_media';
+            case 'New Remarks':
+                return 'new_remarks';
+            case 'Niche':
+                return 'niche';
+            case 'Sectors':
+                return 'sectors';
+            case 'Metrics Update Date':
+                return 'metrics_update_date';
+            case 'Status':
+                return 'status';
+            case 'Rating':
+                return 'rating';
+            case 'Origin File':
+                return 'origin_file';
+            case 'Secondary Email':
+                return 'secondary_email';
+            case 'Notes':
+                return 'notes';
+            case 'Payment Method':
+                return 'payment_method';
+            case 'Finale Price':
+                return 'price';
+            case 'Package / Discount':
+                return 'package__discount';
+            case 'Link Placement Price':
+                return 'link_placement_price';
+            case 'Adult Price':
+                return 'adult_price';
+            case 'CBD Price':
+                return 'cbd_price';
+            case 'Casino Price':
+                return 'casino_price';
+            case 'Original Price':
+                return 'original_price';
+            case 'Country':
+                return 'country';
+            case 'Currency':
+                return 'currency';
+            case 'Organic Keywords':
+                return 'organic_keywords';
+            case 'CF':
+                return 'cf';
+            case 'TF':
+                return 'tf';
+            case 'PA':
+                return 'pa';
+            case 'TR':
+                return 'tr';
+            case 'RD':
+                return 'rd';
+            case 'DR':
+                return 'dr';
+            case 'DA':
+                return 'da';
+            case 'Name':
+                return 'contact_name';
+            case 'Email':
+                return 'email';
+        }
+        return 'title';
+    }
+
+    /**
+     * @param $where string the original where
+     * @param $wp_query WP_Query the original query
+     * @return string the new where
+     */
+    function mam_title_filter( $where, &$wp_query )
+    {
+        global $wpdb;
+        // 2. pull the custom query in here:
+        if ( $search_term = $wp_query->get( 'search_prod_title' ) ) {
+            if($search_term != ''){
+                $where .= ' AND ' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql( like_escape( $search_term ) ) . '%\'';
+            }
+        }
+        return $where;
+    }
+
+    /**
+     * Check if resource used with other websites
+     * @param $resource string the resources url that need to be checked if used or not
+     * @param $websites string the websites comma separated urls that need to be checked if used or not
+     * @return false bool true if used false if not
+     */
+    public static function check_used_resource($resource, $websites)
+    {
+        $websites = explode(',', $websites);
+        foreach ($websites as $website) {
+
+            $meta_query = [];
+            $meta_query['relation'] = 'AND';
+
+            $meta_query[] = [
+                'key' => 'resource_url',
+                'value' => $resource,
+                'compare' => 'LIKE'
+            ];
+            $meta_query[] = [
+                'key' => 'target_url',
+                'value' => $website,
+                'compare' => 'LIKE'
+            ];
+
+
+            // args
+            $args = array(
+                'numberposts' => -1,
+                'posts_per_page' => -1,
+                'post_type' => 'lborder',
+                'meta_query' => $meta_query
+            );
+
+            // query
+            $query = new WP_Query($args);
+            if ($query->have_posts()) {
+                return true;
+            }
         }
         return false;
     }

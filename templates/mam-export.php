@@ -12,7 +12,8 @@ if (isset($_GET['export'])) {
                 'URL', 'IP Address', 'Email', 'Name', 'DA', 'DR', 'RD', 'TR', 'PA', 'TF', 'CF',
                 'Organic Keywords', 'Country', 'Currency', 'Original Price', 'Casino Price', 'CBD Price',
                 'Adult Price', 'Link Placement Price', 'Package / Discount', 'Finale Price',
-                'Payment Method', 'Notes', 'Secondary Email', 'Origin File', 'Rating', 'Status', 'Metrics Update Date', 'Sectors', 'Niche');
+                'Payment Method', 'Notes', 'Secondary Email', 'Origin File', 'Rating', 'Status',
+                'Metrics Update Date', 'Sectors', 'Niche', 'New Remarks', 'Social Media', 'Other Info', 'Contact / Email');
             while ($the_query->have_posts()){
                 $the_query->the_post();
                 $item = array();
@@ -47,6 +48,10 @@ if (isset($_GET['export'])) {
                 $item['Metrics Update Date'] = get_field('metrics_update_date', $id);
                 $item['Sectors'] = implode(', ', wp_get_object_terms( $id, 'sector', array( 'fields' => 'names' ) ));
                 $item['Niche'] = get_field('niche', $id);
+                $item['New Remarks'] = get_field('new_remarks', $id);
+                $item['Social Media'] = get_field('social_media', $id);
+                $item['Other Info'] = get_field('other_info', $id);
+                $item['Contact / Email'] = get_field('contact__email', $id);
                 $csvArray[] = $item;
             }
             $output = fopen("php://output",'w') or die("Can't open php://output");

@@ -57,6 +57,10 @@ get_header(); ?>
                         <li><b>Rating:</b> <?php echo get_field('rating', $id); ?></li>
                         <li><b>Origin File:</b> <?php echo get_field('origin_file', $id); ?></li>
                         <li><b>Niche:</b> <?php echo get_field('niche', $id); ?></li>
+                        <li><b>New Remarks:</b> <?php echo get_field('new_remarks', $id); ?></li>
+                        <li><b>Social Media:</b> <?php echo get_field('social_media', $id); ?></li>
+                        <li><b>Other Info:</b> <?php echo get_field('other_info', $id); ?></li>
+                        <li><b>Contact / Email:</b> <?php echo get_field('contact__email', $id); ?></li>
                     </ul>
 
 

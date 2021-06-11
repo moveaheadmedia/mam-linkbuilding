@@ -48,6 +48,9 @@ class Enqueue implements ServiceInterface
         wp_register_style('datatables', 'https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css');
         wp_enqueue_style('datatables');
 
+        wp_register_style('datatables-select', 'https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css');
+        wp_enqueue_style('datatables-select');
+
         wp_register_style('bootstrap-select', 'https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css');
         wp_enqueue_style('bootstrap-select');
 
@@ -114,6 +117,9 @@ class Enqueue implements ServiceInterface
 
         wp_register_script('datatables-print', 'https://cdn.datatables.net/buttons/1.6.5/js/buttons.print.min.js', array('jquery'));
         wp_enqueue_script('datatables-print');
+
+        wp_register_script('datatables-select', 'https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js', array('jquery', 'datatables'));
+        wp_enqueue_script('datatables-select');
 
         wp_register_script('bootstrap-select', 'https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js', array('jquery', 'bootstrap', 'popper'));
         wp_enqueue_script('bootstrap-select');

@@ -4,7 +4,7 @@ jQuery(document).ready(function ($) {
         var title = $(this).text();
         $(this).html('<input type="text" placeholder="Search ' + title + '" />');
     });
-    $('.datatable').DataTable({
+    $('.datatable:not(.server)').DataTable({
         initComplete: function () {
             // Apply the search
             this.api().columns().every(function () {
@@ -23,19 +23,66 @@ jQuery(document).ready(function ($) {
         buttons: [
             'pageLength', 'copy', 'csv', 'excel', 'pdf', 'print'
         ],
+        columnDefs: [ {
+            orderable: false,
+            className: 'select-checkbox',
+            targets:   0
+        } ],
+        select: {
+            style:    'os',
+            selector: 'td:first-child'
+        },
+        "paging": true
+    });
+
+    // Server processing
+    $('.datatable.server').DataTable({
+        initComplete: function () {
+            // Apply the search
+            this.api().columns().every(function () {
+                var that = this;
+
+                $('input', this.footer()).on('change', function () {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+        },
+        dom: 'Bfrtip',
+        "lengthMenu": [[50, 100, 250, 500, -1], [50, 100, 250, 500, "All"]],
+        buttons: [
+            'pageLength', 'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        columnDefs: [ {
+            orderable: false,
+            className: 'select-checkbox',
+            targets:   0
+        } ],
+        select: {
+            style:    'os',
+            selector: 'td:first-child'
+        },
         "paging": true,
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "https://mamdevsite.com/mam-lb/mam-data-loader/",
+            "type": "POST"
+        },
+
     });
 
     // Columns sorting
-    $("#sortable2").sortable().disableSelection();
-    $("#sortable2").on("sortstop", function (event, ui) {
+    $("#sortable2").sortable().disableSelection().on("sortstop", function () {
         let sortableValuesA = [];
-        $('#sortable2 li').each(function (index) {
+        $('#sortable2 li').each(function () {
             sortableValuesA.push($(this).attr('data-value'));
         });
         $('input[name="resource-order"]').val(JSON.stringify(sortableValuesA));
-    });
-    $("#sortable2").trigger('sortstop');
+    }).trigger('sortstop');
 
     // reset columns
     $('.columns-form button[type="reset"]').click(function (event) {
@@ -45,20 +92,16 @@ jQuery(document).ready(function ($) {
     });
 
     // Columns list
-    $('#columnsList').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    $('#columnsList').on('changed.bs.select', function () {
         var _val = ($(this).val());
         if (Array.isArray(_val)) {
             var html = '';
             $.each(_val, function (index, value) {
                 html = html + '<li class="ui-state-default" data-value="' + value + '">' + value + '</li>';
             });
-            $("#sortable2").html(html);
-            $("#sortable2").sortable("refresh");
-            $("#sortable2").trigger('sortstop');
+            $("#sortable2").html(html).sortable("refresh").trigger('sortstop');
         } else {
-            $("#sortable2").html('');
-            $("#sortable2").sortable("refresh");
-            $("#sortable2").trigger('sortstop');
+            $("#sortable2").html('').sortable("refresh").trigger('sortstop');
         }
     });
 
@@ -70,8 +113,7 @@ jQuery(document).ready(function ($) {
         $("#price").val('0 - 3000');
         $("#rd").val('0');
         $("#tr").val('0');
-        $("#sectors").val('');
-        $("#sectors").selectpicker("refresh");
+        $("#sectors").val('').selectpicker("refresh");
 
         $('.filters').submit();
     });
@@ -81,20 +123,17 @@ jQuery(document).ready(function ($) {
         $(this).parent().parent().addClass('fullscreen');
         $('.fullscreen').fullScreen(true)
         return false;
-    });
-    $('body').on('click', '.existfullscreen', function () {
+    }).on('click', '.existfullscreen', function () {
         $(this).parent().parent().removeClass('fullscreen');
         $(document).fullScreen(false);
         return false;
-    });
-
-    // Table view elipssies elemnts
-    $('body').on('click', 'table.dataTable tbody th, table.dataTable tbody td', function () {
+    }).on('click', 'table.dataTable tbody th, table.dataTable tbody td', function () {
         $(this).toggleClass('active');
     });
 
     // Range Slider jQuery UI
-    if ($('#daSlider').length) {
+    // noinspection JSJQueryEfficiency
+    if ($('#daSlider').length > 0) {
         $('#daSlider').slider({
             range: true,
             min: 0,
@@ -105,7 +144,8 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-    if ($('#drSlider').length) {
+    // noinspection JSJQueryEfficiency
+    if ($('#drSlider').length > 0) {
         $('#drSlider').slider({
             range: true,
             min: 0,
@@ -116,7 +156,8 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-    if ($('#priceSlider').length) {
+    // noinspection JSJQueryEfficiency
+    if ($('#priceSlider').length > 0) {
         $('#priceSlider').slider({
             range: true,
             min: 0,
@@ -127,7 +168,8 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-    if ($('#rdSlider').length) {
+    // noinspection JSJQueryEfficiency
+    if ($('#rdSlider').length > 0) {
         $('#rdSlider').slider({
             range: "max",
             min: 0,
@@ -138,7 +180,8 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-    if ($('#trSlider').length) {
+    // noinspection JSJQueryEfficiency
+    if ($('#trSlider').length > 0) {
         $('#trSlider').slider({
             range: "max",
             min: 0,
@@ -170,6 +213,11 @@ jQuery(document).ready(function ($) {
         "alwaysShowCalendars": true
     }, function(start, end, label) {
         console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+    });
+
+    // Niche Search
+    $('input#niche').on('change', function(){
+        $('input[placeholder="Search Niche"]').val($('input#niche').val()).trigger('change');
     });
 
 });

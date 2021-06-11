@@ -66,32 +66,10 @@ if (!function_exists('elementor_theme_do_location') || !elementor_theme_do_locat
         </div><!-- #content-wrap -->
         <?php do_action('ocean_after_content_wrap'); ?>
 
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <br/>
-                        <form method="get">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <input type="text" readonly class="datesRange" value="<?php echo $filters['date1']; ?> - <?php echo $filters['date2']; ?>" name="dates"/>
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="submit" class="btn btn-primary">Apply</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <?php
         $order_columns = array();
         if (is_user_logged_in()) {
-            $columns_list = array("Actions", "Client Name", "Client Website", "Agency", "Anchor Text", "Anchor Text Type", "Target URL", "Niche", "Sent To Writers",
+            $columns_list = array("Client Name", "Client Website", "Agency", "Anchor Text", "Anchor Text Type", "Target URL", "Niche", "Sent To Writers",
                 "Article sent to the site", "Live Link Received", "Live Link", "Date Paid", "USD Price", "THB Price", "Status",
                 "Start Date", "Complete Date", "Sectors", "Resource URL", "IP Address", "Email", "Name", "DA", "DR", "RD", "TR", "PA", "TF", "CF",
                 "Organic Keywords", "Country", "Currency", "Original Price", "Casino Price", "CBD Price", "Adult Price", "Link Placement Price",
@@ -106,13 +84,13 @@ if (!function_exists('elementor_theme_do_location') || !elementor_theme_do_locat
             ?>
             <div class="container">
                 <br/>
-                <button class="btn btn-default" type="submit" data-toggle="collapse" href="#columns" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
+                <button class="btn btn-default" type="submit" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
                 <div class="table-columns collapse" id="columns">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="av-list">
                                 <br/>
-                                <h2>Showing Columns</h2>
+                                <h2><label for="columnsList">Showing Columns</label></h2>
                                 <select class="selectpicker" id="columnsList" multiple data-actions-box="true">
                                     <?php
                                     foreach ($columns_list as $item) {
@@ -160,12 +138,13 @@ if (!function_exists('elementor_theme_do_location') || !elementor_theme_do_locat
         <div class="container">
             <div class="responsive-table">
                 <div class="float-right">
-                    <a href="#/" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
-                    <a href="#/" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
+                    <a href="#" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
+                    <a href="#" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
                 </div>
                 <table class="table datatable">
                     <thead class="thead-dark">
                     <tr>
+                        <th scope="col"></th>
                         <th scope="col">ID</th>
                         <?php foreach ($order_columns as $item) { ?>
                             <th scope="col"><?php echo $item; ?></th>
@@ -179,12 +158,7 @@ if (!function_exists('elementor_theme_do_location') || !elementor_theme_do_locat
                         $client = get_field('client', $id);
                         $agency = get_the_title(get_field('agency', $client));
 
-                        $actions = '<a href="' . site_url() . '/add-order/?id=' . $id . '" class="btn btn-primary" target="_blank">Add Resource</a>';
-                        if (get_field('resource_url', $id)) {
-                            $actions = '<a href="' . site_url() . '/add-order/?id=' . $id . '" class="btn btn-warning" target="_blank">Change Resource</a>';
-                        }
                         $orderData = array(
-                            "Actions" => $actions,
                             "Client Name" => '<a data-type="iframe" href="' . get_the_permalink($client) . '" target="_blank" data-fancybox>' . get_the_title($client) . '</a>',
                             "Client Website" => get_field('website', $client),
                             "Agency" => $agency,
@@ -233,6 +207,7 @@ if (!function_exists('elementor_theme_do_location') || !elementor_theme_do_locat
                         );
                         ?>
                         <tr>
+                            <td></td>
                             <td>
                                 <a data-type="iframe" href="<?php the_permalink(); ?>" target="_blank"
                                    data-fancybox><?php the_title(); ?></a>
@@ -245,6 +220,7 @@ if (!function_exists('elementor_theme_do_location') || !elementor_theme_do_locat
                     </tbody>
                     <tfoot>
                     <tr>
+                        <th scope="col"></th>
                         <th scope="col">ID</th>
                         <?php foreach ($order_columns as $item) { ?>
                             <th scope="col"><?php echo $item; ?></th>

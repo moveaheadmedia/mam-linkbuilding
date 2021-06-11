@@ -265,6 +265,7 @@ class Clients implements ServiceInterface
         // args
         $args = array(
             'numberposts' => -1,
+            'posts_per_page' => -1,
             'post_type' => 'client',
             'meta_query' => $meta_query
         );

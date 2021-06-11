@@ -4,7 +4,7 @@ use MAM\Plugin\Services\Admin\Orders;
 use ParseCsv\Csv;
 
 // init global data
-global $mam_action, $mam_file,$importedOrders,
+global $mam_action, $mam_file, $importedOrders,
        $mam_duplicatedLines, $mam_errorLines, $mam_csv, $mam_new_sectors,
        $mam_new_order, $mam_existing_order, $mam_new_client, $mam_existing_client, $mam_new_agency, $mam_existing_agency;
 
@@ -26,7 +26,7 @@ $mam_action = get_field('action_orders', 'option');
 $mam_file = get_field('upload_file_orders', 'option');
 
 // mamdevsite auth
-$mam_file = str_replace(site_url().'/', ABSPATH, $mam_file);
+$mam_file = str_replace(site_url() . '/', ABSPATH, $mam_file);
 
 // check if the file exist then convert it to array
 $mam_csv = array();
@@ -35,15 +35,15 @@ if (file_exists($mam_file)) {
     if (!copy($mam_file, $newfile)) {
         echo "failed to copy $mam_file...\n";
     }
-    $csv   = new Csv($newfile);
-    $mam_csv   = $csv->data;
+    $csv = new Csv($newfile);
+    $mam_csv = $csv->data;
 } else {
     $mam_errorLines[] = ('Error: The uploaded file does not exist');
 }
 
 // check for errors in the CSV file
 $res = array();
-foreach ($mam_csv as $item){
+foreach ($mam_csv as $item) {
     $res[] = array_map('trim', $item);
 }
 setLines($res);
@@ -60,6 +60,14 @@ if ($mam_action == 'Import the file') {
     if ($check) {
         $importedOrders = 1;
         foreach ($mam_csv as $orderData) {
+            // Set Site URL and Resource URL if Target URL / Live Link Exists
+            if ((!isset($orderData['Client Website']) || $orderData['Client Website'] == '') && (isset($orderData['Target URL']) && $orderData['Target URL'] != '')) {
+                $orderData['Client Website'] = 'https://' . domain($orderData['Target URL']);
+            }
+            $orderData['Client Name'] = $orderData['Client Website'];
+            if ((!isset($orderData['Resource URL']) || $orderData['Resource URL'] == '') && (isset($orderData['Live Link']) && $orderData['Live Link'] != '')) {
+                $orderData['Resource URL'] = domain($orderData['Live Link']);
+            }
             $agencyID = post_exists($orderData['Agency'], '', '', 'agency');
             if (!$agencyID) {
                 $agencyID = wp_insert_post(array(
@@ -162,7 +170,7 @@ get_header(); ?>
                 $check = false;
             }
             if ($check) {
-                echo '<h3>Imported Orders: (' . ($importedOrders -1) . ')</h3>';
+                echo '<h3>Imported Orders: (' . ($importedOrders - 1) . ')</h3>';
             }
         }
 
@@ -176,7 +184,7 @@ get_header(); ?>
 
 function setLines($lines)
 {
-    global $mam_duplicatedLines, $mam_errorLines, $mam_new_sectors,
+    global $mam_errorLines, $mam_new_sectors,
            $mam_new_order, $mam_existing_order, $mam_new_client, $mam_existing_client,
            $mam_new_agency, $mam_existing_agency;
 
@@ -189,55 +197,52 @@ function setLines($lines)
 
         // $mam_new_order, $mam_existing_order
         if (post_exists($line['ID'], '', '', 'lborder')) {
-            $mam_existing_order[] = $count . ': ' . $line['ID'];
+            $mam_existing_order[] = (1 + $count) . ': ' . $line['ID'];
         } else {
-            $mam_new_order[] = $count . ': ' . $line['ID'];
+            $mam_new_order[] = (1 + $count) . ': ' . $line['ID'];
+        }
+
+        if ((!isset($line['Client Website']) || $line['Client Website'] == '') && (isset($line['Target URL']) && $line['Target URL'] != '')) {
+            $line['Client Website'] = 'https://' . domain($line['Target URL']);
+        }
+        $line['Client Name'] = domain($line['Client Website']);
+        if(!$line['Client Name']){
+            continue;
         }
 
         // $mam_new_client, $mam_existing_client
         if (post_exists($line['Client Name'], '', '', 'client')) {
-            $mam_existing_client[] = $count . ': ' . $line['Client Name'];
+            $mam_existing_client[] = (1 + $count) . ': ' . $line['Client Name'];
         } else {
-            $mam_new_client[] = $count . ': ' . $line['Client Name'];
+            $mam_new_client[] = (1 + $count) . ': ' . $line['Client Name'];
         }
 
         // $mam_new_agency and $mam_existing_agency
         if (post_exists($line['Agency'], '', '', 'agency')) {
-            $mam_existing_agency[] = $count . ': ' . $line['Agency'];
+            $mam_existing_agency[] = (1 + $count) . ': ' . $line['Agency'];
         } else {
-            $mam_new_agency[] = $count . ': ' . $line['Agency'];
+            $mam_new_agency[] = (1 + $count) . ': ' . $line['Agency'];
         }
 
         // $mam_errorLines
         if (strlen($line['ID']) < 2) {
-            $mam_errorLines[] = $count . ': Invalid ID';
+            $mam_errorLines[] = (1 + $count) . ': Invalid ID: ' .$line['ID'];
         }
+        /*
         if (strlen($line['Client Name']) < 2) {
-            $mam_errorLines[] = $count . ': Invalid Client Name';
-        }
+            $mam_errorLines[] = (1 + $count) . ': Invalid Client Name: ' . $line['Client Name'];
+        }*/
         if (strlen($line['Client Website']) < 2) {
-            $mam_errorLines[] = $count . ': Invalid client Website';
+            $mam_errorLines[] = (1 + $count) . ': Invalid client Website';
         }
         if (strlen($line['Agency']) < 2) {
-            $mam_errorLines[] = $count . ': Invalid Agency name';
-        }
-        if (strlen($line['Anchor Text']) < 2) {
-            $mam_errorLines[] = $count . ': Invalid Anchor Text';
+            $mam_errorLines[] = (1 + $count) . ': Invalid Agency name';
         }
         if (strlen($line['Target URL']) < 2) {
-            $mam_errorLines[] = $count . ': Invalid Target URL';
+            $mam_errorLines[] = (1 + $count) . ': Invalid Target URL';
         }
-
-        // $mam_duplicatedLines
-        $_count = 1;
-        foreach ($lines as $_line) {
-            if ($line['ID'] == $_line['ID']) {
-                if ($_count != $count) {
-                    $mam_duplicatedLines[] = ($count + 1). ':' . ($_count + 1);
-                }
-            }
-
-            $_count = $_count + 1;
+        if ((!isset($line['Resource URL']) || $line['Resource URL'] == '') && (isset($line['Live Link']) && $line['Live Link'] != '')) {
+            $line['Resource URL'] = domain($line['Live Link']);
         }
 
         // $mam_new_sectors
@@ -268,6 +273,14 @@ function update_client($clientID, $agencyID, $orderData)
 function url_exists($url)
 {
     return curl_init($url) !== false;
+}
+
+function domain($url)
+{
+    $url = strtolower($url);
+
+    $host = parse_url( $url, PHP_URL_HOST);
+    return str_replace('www.', '', $host);
 }
 
 ?>

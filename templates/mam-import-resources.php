@@ -43,27 +43,26 @@ if (file_exists($mam_file)) {
 // check for errors in the CSV file
 $res = array();
 foreach ($mam_csv as $item){
+    $item = array_change_key_case($item, CASE_LOWER);
     $sectors = array();
     $count = 100;
     for($i = 1; $i <= $count; $i++){
-        if(isset($item['Sector'.$i])){
-            $sectors[] = $item['Sector'.$i];
+        if(isset($item['sector'.$i])){
+            $sectors[] = $item['sector'.$i];
         }else{
             break;
         }
     }
-    $item['Sectors'] = implode(', ', $sectors);
+    $item['sectors'] = implode(', ', $sectors);
     $res[] = array_map('trim', $item);
 }
+
 setLines($res);
 
 // Import the file
 if ($mam_action == 'Import the file') {
     // check for errors
     $check = true;
-    if (!empty($mam_duplicatedLines)) {
-        $check = false;
-    }
     if (!empty($mam_errorLines)) {
         $check = false;
     }
@@ -73,12 +72,12 @@ if ($mam_action == 'Import the file') {
         foreach ($res as $row) {
             $resourceData = $row;
             // $mam_updatingLines and $mam_newLines
-            $id = post_exists($resourceData['URL'], '', '', 'resources');
+            $id = post_exists($resourceData['url'], '', '', 'resources');
             if ($id) {
                 update_resource($id, $resourceData);
             } else {
                 $id = wp_insert_post(array(
-                    'post_title' => $resourceData['URL'],
+                    'post_title' => $resourceData['url'],
                     'post_type' => 'resources',
                     'post_status' => 'publish',
                 ));
@@ -144,99 +143,131 @@ if ($mam_action == 'Import the file') {
 
 function update_resource($id, $data)
 {
-    if (isset($data['Email'])) {
-        update_field('email', $data['Email'], $id);
+    if (isset($data['email'])) {
+        update_field('email', $data['email'], $id);
     }
-    if (isset($data['IP Address'])) {
-        update_field('ip_address', $data['IP Address'], $id);
+    if (isset($data['ip address'])) {
+        update_field('ip_address', $data['ip address'], $id);
     }
-    if (!isset($data['IP Address']) || $data['IP Address'] == '') {
-        update_field('ip_address', gethostbyname($data['URL']), $id);
+    if (!isset($data['ip address']) || $data['ip address'] == '') {
+        update_field('ip_address', gethostbyname($data['url']), $id);
     }
-    if (isset($data['Name'])) {
-        update_field('contact_name', $data['Name'], $id);
+    if (isset($data['name'])) {
+        update_field('contact_name', $data['name'], $id);
     }
-    if (isset($data['DA'])) {
-        update_field('da', $data['DA'], $id);
+    if (isset($data['da']) && $data['da'] != '') {
+        update_field('da', $data['da'], $id);
+    }else{
+        update_field('da', '0', $id);
     }
-    if (isset($data['DR'])) {
-        update_field('dr', $data['DR'], $id);
+    if (isset($data['dr']) && $data['dr'] != '') {
+        update_field('dr', $data['dr'], $id);
+    }else{
+        update_field('dr', '0', $id);
     }
-    if (isset($data['RD'])) {
-        update_field('rd', $data['RD'], $id);
+    if (isset($data['rd'])  && $data['rd'] != '') {
+        update_field('rd', $data['rd'], $id);
+    }else{
+        update_field('rd', '0', $id);
     }
-    if (isset($data['TR'])) {
-        update_field('tr', $data['TR'], $id);
+    if (isset($data['tr'])  && $data['tr'] != '') {
+        update_field('tr', $data['tr'], $id);
+    }else{
+        update_field('tr', '0', $id);
     }
-    if (isset($data['PA'])) {
-        update_field('pa', $data['PA'], $id);
+    if (isset($data['pa']) &&  $data['pa'] != '') {
+        update_field('pa', $data['pa'], $id);
+    }else{
+        update_field('pa', '0', $id);
     }
-    if (isset($data['TF'])) {
-        update_field('tf', $data['TF'], $id);
+    if (isset($data['tf']) &&  $data['tf'] != '') {
+        update_field('tf', $data['tf'], $id);
+    }else{
+        update_field('tf', '0', $id);
     }
-    if (isset($data['CF'])) {
-        update_field('cf', $data['CF'], $id);
+    if (isset($data['cf']) &&  $data['cf'] != '') {
+        update_field('cf', $data['cf'], $id);
+    }else{
+        update_field('cf', '0', $id);
     }
-    if (isset($data['Organic Keywords'])) {
-        update_field('organic_keywords', $data['Organic Keywords'], $id);
+    if (isset($data['organic keywords']) &&  $data['organic keywords'] != '') {
+        update_field('organic_keywords', $data['organic keywords'], $id);
+    }else{
+        update_field('organic_keywords', '0', $id);
     }
-    if (isset($data['Currency']) && $data['Currency'] != '') {
-        update_field('currency', $data['Currency'], $id);
+    if (isset($data['currency']) && $data['currency'] != '') {
+        update_field('currency', $data['currency'], $id);
     }else{
         update_field('currency', 'USD', $id);
     }
-    if (isset($data['Original Price'])) {
-        update_field('original_price', $data['Original Price'], $id);
+    if (isset($data['original price']) &&  $data['original price'] != '') {
+        update_field('original_price', $data['original price'], $id);
+    }else{
+        update_field('original_price', '0', $id);
     }
-    if (isset($data['Casino Price'])) {
-        update_field('casino_price', $data['Casino Price'], $id);
+    if (isset($data['casino price'])) {
+        update_field('casino_price', $data['casino price'], $id);
     }
-    if (isset($data['CBD Price'])) {
-        update_field('cbd_price', $data['CBD Price'], $id);
+    if (isset($data['cbd price'])) {
+        update_field('cbd_price', $data['cbd price'], $id);
     }
-    if (isset($data['Adult Price'])) {
-        update_field('adult_price', $data['Adult Price'], $id);
+    if (isset($data['adult price'])) {
+        update_field('adult_price', $data['adult price'], $id);
     }
-    if (isset($data['Link Placement Price'])) {
-        update_field('link_placement_price', $data['Link Placement Price'], $id);
+    if (isset($data['link placement price'])) {
+        update_field('link_placement_price', $data['link placement price'], $id);
     }
-    if (isset($data['Package / Discount'])) {
-        update_field('package__discount', $data['Package / Discount'], $id);
+    if (isset($data['package / discount'])) {
+        update_field('package__discount', $data['package / discount'], $id);
     }
-    if (isset($data['Finale Price'])) {
-        update_field('price', $data['Finale Price'], $id);
+    if (isset($data['finale price']) && $data['finale price'] != '') {
+        update_field('price', $data['finale price'], $id);
+    }else{
+        update_field('price', '0', $id);
     }
-    if (isset($data['Payment Method'])) {
-        update_field('payment_method', $data['Payment Method'], $id);
+    if (isset($data['payment method'])) {
+        update_field('payment_method', $data['payment method'], $id);
     }
-    if (isset($data['Notes'])) {
-        update_field('notes', $data['Notes'], $id);
+    if (isset($data['notes'])) {
+        update_field('notes', $data['notes'], $id);
     }
-    if (isset($data['Secondary Email'])) {
-        update_field('secondary_email', $data['Secondary Email'], $id);
+    if (isset($data['secondary email'])) {
+        update_field('secondary_email', $data['secondary email'], $id);
     }
-    if (isset($data['Origin File'])) {
-        update_field('origin_file', $data['Origin File'], $id);
+    if (isset($data['origin file'])) {
+        update_field('origin_file', $data['origin file'], $id);
     }
-    if (isset($data['Rating'])) {
-        update_field('rating', $data['Rating'], $id);
+    if (isset($data['rating'])) {
+        update_field('rating', $data['rating'], $id);
     }
-    if (isset($data['Status']) && $data['Status'] != '') {
-        update_field('status', $data['Status'], $id);
+    if (isset($data['status']) && $data['status'] != '') {
+        update_field('status', $data['status'], $id);
     }else{
         update_field('status', 'Raw', $id);
     }
-    if (isset($data['Metrics Update Date'])) {
-        update_field('metrics_update_date', $data['Metrics Update Date'], $id);
+    if (isset($data['metrics update date'])) {
+        update_field('metrics_update_date', $data['metrics update date'], $id);
     }
-    if (isset($data['Niche'])) {
-        update_field('niche', $data['Niche'], $id);
+    if (isset($data['niche'])) {
+        update_field('niche', $data['niche'], $id);
     }
-    if (isset($data['Country'])) {
-        update_field('country', $data['Country'], $id);
+    if (isset($data['country'])) {
+        update_field('country', $data['country'], $id);
     }
-    if (isset($data['Sectors'])) {
-        $sectors = explode(', ', $data['Sectors']);
+    if (isset($data['new remarks'])) {
+        update_field('new_remarks', $data['new remarks'], $id);
+    }
+    if (isset($data['social media'])) {
+        update_field('social_media', $data['social media'], $id);
+    }
+    if (isset($data['other info'])) {
+        update_field('other_info', $data['other info'], $id);
+    }
+    if (isset($data['contact / email'])) {
+        update_field('contact__email', $data['contact / email'], $id);
+    }
+    if (isset($data['sectors'])) {
+        $sectors = explode(', ', $data['sectors']);
         wp_set_post_terms($id, $sectors, 'sector');
     }
 }
@@ -249,37 +280,38 @@ function url_exists($url)
 function setLines($lines)
 {
     global $mam_newLines, $mam_updatingLines,
-           $mam_duplicatedLines, $mam_errorLines, $mam_new_sectors;
+           $mam_duplicatedLines, $mam_errorLines;
 
     if (!is_admin()) {
         require_once(ABSPATH . 'wp-admin/includes/post.php');
     }
     $count = 2;
+
     foreach ($lines as $line) {
-        if(!$line['URL']){
+        if(!$line['url']){
             continue;
         }
-        if (post_exists($line['URL'], '', '', 'resources')) {
-            $mam_updatingLines[] = $count . ': ' . $line['URL'];
+        if (post_exists($line['url'], '', '', 'resources')) {
+            $mam_updatingLines[] = $count . ': ' . $line['url'];
         } else {
-            $mam_newLines[] = $count . ': ' . $line['URL'];
+            $mam_newLines[] = $count . ': ' . $line['url'];
         }
         // $mam_duplicatedLines
         $_count = 2;
         foreach ($lines as $_line) {
-            if ($line['URL'] == $_line['URL']) {
+            if ($line['url'] == $_line['url']) {
                 if ($_count != $count) {
-                    $mam_duplicatedLines[] = $count . ': ' . $line['URL'] . ' - ' . $_count . ': ' . $_line['URL'];
+                    $mam_duplicatedLines[] = $count . ': ' . $line['url'] . ' - ' . $_count . ': ' . $_line['url'];
                 }
             }
             $_count = $_count + 1;
         }
 
         // $mam_new_sectors
-        if (isset($line['Sectors'])) {
-            $sectors = explode(', ', $line['Sectors']);
+        if (isset($line['sectors'])) {
+            $sectors = explode(', ', $line['sectors']);
             foreach ($sectors as $sector) {
-                if($sector == ''){
+                if($sector == ',' || $sector == ''){
                     continue;
                 }
                 if (!term_exists($sector, 'sector')) {

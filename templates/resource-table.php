@@ -8,7 +8,7 @@ global $_id;
 ?>
     <div class="container">
         <br/>
-        <button class="btn btn-default" type="submit" data-toggle="collapse" href="#filters" role="button" aria-expanded="false" aria-controls="filters">Filters</button>
+        <button class="btn btn-default" type="submit" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="filters">Filters</button>
         <div class="filters collapse" id="filters">
             <?php
             // init $filters
@@ -97,7 +97,7 @@ global $_id;
 
                             <p>
                                 <label for="da">DA:</label>
-                                <input type="text" id="da" name="da" readonly style="border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['da']; ?>, <?php echo $filters['da1']; ?>]" value="<?php echo $filters['da']; ?> - <?php echo $filters['da1']; ?>">
+                                <input type="text" id="da" name="da" style="border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['da']; ?>, <?php echo $filters['da1']; ?>]" value="<?php echo $filters['da']; ?> - <?php echo $filters['da1']; ?>">
                             </p>
                             <div id="daSlider"></div>
                         </div>
@@ -108,7 +108,7 @@ global $_id;
 
                             <p>
                                 <label for="dr">DR:</label>
-                                <input type="text" id="dr" name="dr" readonly style="border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['dr']; ?>,<?php echo $filters['dr1']; ?>]" value="<?php echo $filters['dr']; ?> - <?php echo $filters['dr1']; ?>">
+                                <input type="text" id="dr" name="dr" style="border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['dr']; ?>,<?php echo $filters['dr1']; ?>]" value="<?php echo $filters['dr']; ?> - <?php echo $filters['dr1']; ?>">
                             </p>
                             <div id="drSlider"></div>
 
@@ -121,7 +121,7 @@ global $_id;
                                 <div class="form-group">
                                     <p>
                                         <label for="price">Price:</label>
-                                        <input type="text" id="price" name="price" readonly style="border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['price']; ?>,<?php echo $filters['price1']; ?>]" value="<?php echo $filters['price']; ?> - <?php echo $filters['price1']; ?>">
+                                        <input type="text" id="price" name="price" style="border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['price']; ?>,<?php echo $filters['price1']; ?>]" value="<?php echo $filters['price']; ?> - <?php echo $filters['price1']; ?>">
                                     </p>
                                     <div id="priceSlider"></div>
                                 </div>
@@ -134,7 +134,7 @@ global $_id;
                         <div class="form-group">
                             <p>
                                 <label for="rd">Minimum RD</label><br/>
-                                <input type="text" class="form-control" id="rd" readonly style="border:0; color:#f6931f; font-weight:bold;" name="rd" value="<?php echo $filters['rd']; ?>" data-value="<?php echo $filters['rd']; ?>" placeholder="0">
+                                <input type="text" class="form-control" id="rd" style="border:0; color:#f6931f; font-weight:bold;" name="rd" value="<?php echo $filters['rd']; ?>" data-value="<?php echo $filters['rd']; ?>" placeholder="0">
                             </p>
                             <div id="rdSlider"></div>
                         </div>
@@ -144,7 +144,7 @@ global $_id;
                         <div class="form-group">
                             <p>
                                 <label for="tr">Minimum TR</label><br/>
-                                <input type="text" class="form-control" id="tr" name="tr" readonly style="border:0; color:#f6931f; font-weight:bold;" value="<?php echo $filters['tr']; ?>" data-value="<?php echo $filters['tr']; ?>" placeholder="0">
+                                <input type="text" class="form-control" id="tr" name="tr" style="border:0; color:#f6931f; font-weight:bold;" value="<?php echo $filters['tr']; ?>" data-value="<?php echo $filters['tr']; ?>" placeholder="0">
                             </p>
                             <div id="trSlider"></div>
                         </div>
@@ -175,13 +175,13 @@ if (is_user_logged_in()) {
     ?>
     <div class="container">
         <br/>
-        <button class="btn btn-default" type="submit" data-toggle="collapse" href="#columns" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
+        <button class="btn btn-default" type="submit" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
         <div class="table-columns collapse" id="columns">
             <div class="row">
                 <div class="col-md-6">
                     <div class="av-list">
                         <br/>
-                        <h2>Showing Columns</h2>
+                        <h2><label for="columnsList">Showing Columns</label></h2>
                         <select class="selectpicker" id="columnsList" multiple data-actions-box="true">
                             <?php
                             foreach ($columns_list as $item) {
@@ -233,14 +233,14 @@ $the_query = apply_filters('mam-resources-filtered-posts', $filters); ?>
     <div class="container">
         <div class="responsive-table">
             <div class="float-right">
-                <a href="#/" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
-                <a href="#/" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
+                <a href="#" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
+                <a href="#" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
             </div>
-            <table class="table datatable">
+            <table class="table datatable server">
                 <thead class="thead-dark">
                 <tr>
                     <?php if (isset($_id) && $_id != '') { ?>
-                        <th class="<?php echo sanitize_title('Action'); ?>" scope="col">Action</th>
+                        <!-- <th class="<?php echo sanitize_title('Action'); ?>" scope="col">Action</th> -->
                     <?php } ?>
                     <th class="<?php echo sanitize_title('Website'); ?>" scope="col">Website</th>
                     <th class="<?php echo sanitize_title('Email'); ?>" scope="col">Email</th>
@@ -253,20 +253,18 @@ $the_query = apply_filters('mam-resources-filtered-posts', $filters); ?>
                 <?php while ($the_query->have_posts()) {
                     $the_query->the_post();
                     $id = get_the_ID();
-                    $_finalePrice = '-';
+                    $_finalePrice = '0';
                     $_ogPrice = get_field('original_price', $id);
                     if ($_ogPrice) {
                         $_finalePrice = $_ogPrice;
                     }
                     $_price = get_field('price', $id);
-                    if ($_price) {
+                    if ($_price && $_price != '0') {
                         $_finalePrice = $_price;
                     }
 
                     // filterprice
-                    if ($_finalePrice > $filters['price'] && $_finalePrice <= $filters['price1']) {
-
-                    } else {
+                    if ($_finalePrice < $filters['price'] || $_finalePrice > $filters['price1']) {
                         continue;
                     }
 
@@ -312,7 +310,7 @@ $the_query = apply_filters('mam-resources-filtered-posts', $filters); ?>
                     ?>
                     <tr>
                         <?php if (isset($_id) && $_id != '') { ?>
-                            <td class="<?php echo sanitize_title('Action'); ?>"><a href="<?php echo site_url(); ?>/add-order/?id=<?php echo $_id; ?>&r_id=<?php echo $id; ?>" class="btn btn-primary">Select</a></td>
+                            <!-- <td class="<?php echo sanitize_title('Action'); ?>"><a href="<?php echo site_url(); ?>/add-order/?id=<?php echo $_id; ?>&r_id=<?php echo $id; ?>" class="btn btn-primary">Select</a></td> -->
                         <?php } ?>
                         <td class="<?php echo sanitize_title('website'); ?>">
                             <a data-type="iframe" href="<?php echo get_the_permalink($id); ?>" target="_blank"
@@ -341,7 +339,7 @@ $the_query = apply_filters('mam-resources-filtered-posts', $filters); ?>
                 <tfoot>
                 <tr>
                     <?php if (isset($_id) && $_id != '') { ?>
-                        <th class="<?php echo sanitize_title('Action'); ?>" scope="col">Action</th>
+                        <!-- <th class="<?php echo sanitize_title('Action'); ?>" scope="col">Action</th> -->
                     <?php } ?>
                     <th class="<?php echo sanitize_title('Website'); ?>" scope="col">Website</th>
                     <th class="<?php echo sanitize_title('Email'); ?>" scope="col">Email</th>
