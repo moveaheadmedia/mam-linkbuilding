@@ -135,6 +135,14 @@ class Enqueue implements ServiceInterface
 
         wp_register_script('mam-lb-plugin', $this->plugin_url . 'assets/js/mam-lb-plugin.js', array('jquery'));
         wp_enqueue_script('mam-lb-plugin');
+
+        wp_localize_script( 'mam-lb-plugin', 'mam_lb_plugin_object',
+            array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'site_url' => site_url()
+            )
+        );
+
     }
 
 }

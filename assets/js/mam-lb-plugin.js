@@ -3,7 +3,7 @@ jQuery(document).ready(function ($) {
     $('.import-existing-resource').click(function(){
         var form = $(this).parent('form');
         var table = form.parent('div');
-        var ajaxurl = 'https://mamdevsite.com/mam-lb/wp-admin/admin-ajax.php';
+        var ajaxurl = mam_lb_plugin_object.ajax_url;
         var _data = form.serialize();
         table.addClass('cancelled').addClass('imported');
         jQuery.post(ajaxurl, _data, function (response) {
@@ -35,7 +35,7 @@ jQuery(document).ready(function ($) {
         var form = $(this).parent().parent().parent().parent().parent('form');
         var location = $(this).parent();
         var _tr = $(this).parent().parent();
-        var ajaxurl = 'https://mamdevsite.com/mam-lb/wp-admin/admin-ajax.php';
+        var ajaxurl = mam_lb_plugin_object.ajax_url;
         var _data = form.serialize();
         _tr.addClass('cancelled').addClass('imported');
         jQuery.post(ajaxurl, _data, function (response) {
@@ -68,7 +68,7 @@ jQuery(document).ready(function ($) {
     $('.import-existing-order').click(function(){
         var form = $(this).parent('form');
         var table = form.parent('div');
-        var ajaxurl = 'https://mamdevsite.com/mam-lb/wp-admin/admin-ajax.php';
+        var ajaxurl = mam_lb_plugin_object.ajax_url;
         var _data = form.serialize();
         table.addClass('cancelled').addClass('imported');
         jQuery.post(ajaxurl, _data, function (response) {
@@ -105,7 +105,7 @@ jQuery(document).ready(function ($) {
         var form = $(this).parent().parent().parent().parent().parent('form');
         var location = $(this).parent();
         var _tr = $(this).parent().parent();
-        var ajaxurl = 'https://mamdevsite.com/mam-lb/wp-admin/admin-ajax.php';
+        var ajaxurl = mam_lb_plugin_object.ajax_url;
         var _data = form.serialize();
         _tr.addClass('cancelled').addClass('imported');
         jQuery.post(ajaxurl, _data, function (response) {
@@ -248,7 +248,7 @@ jQuery(document).ready(function ($) {
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": "https://mamdevsite.com/mam-lb/mam-data-loader/",
+            "url": mam_lb_plugin_object.site_url + "/mam-data-loader/",
             "type": "POST"
         },
 
