@@ -1,288 +1,399 @@
 <?php
+get_header();
 
 use MAM\Plugin\Services\Admin\Orders;
-use ParseCsv\Csv;
+use MAM\Plugin\Services\Admin\ImportOrders;
+use MAM\Plugin\Services\Admin\Resources;
 
-// init global data
-global $mam_action, $mam_file, $importedOrders,
-       $mam_duplicatedLines, $mam_errorLines, $mam_csv, $mam_new_sectors,
-       $mam_new_order, $mam_existing_order, $mam_new_client, $mam_existing_client, $mam_new_agency, $mam_existing_agency;
+function proccess_csv()
+{
+    // warnings
+    $warnings = array();
 
-// list of line numbers
-$mam_duplicatedLines = array();
-$mam_errorLines = array();
-$mam_new_sectors = array();
-$mam_new_order = array();
-$mam_existing_order = array();
-$mam_new_client = array();
-$mam_existing_client = array();
-$mam_new_agency = array();
-$mam_existing_agency = array();
+    // Csv file URL
+    $mam_file = get_field('upload_file_orders', 'option');
 
-// Import the file OR Check only
-$mam_action = get_field('action_orders', 'option');
+    // mamdevsite auth
+    $mam_file = str_replace(site_url() . '/', ABSPATH, $mam_file);
 
-// Csv file URL
-$mam_file = get_field('upload_file_orders', 'option');
-
-// mamdevsite auth
-$mam_file = str_replace(site_url() . '/', ABSPATH, $mam_file);
-
-// check if the file exist then convert it to array
-$mam_csv = array();
-if (file_exists($mam_file)) {
-    $newfile = 'import.csv';
-    if (!copy($mam_file, $newfile)) {
-        echo "failed to copy $mam_file...\n";
+    // check file exist
+    if (!file_exists($mam_file)) {
+        return '<h1 class="text text-danger">Error: The uploaded file does not exist.</h1>';
     }
-    $csv = new Csv($newfile);
-    $mam_csv = $csv->data;
-} else {
-    $mam_errorLines[] = ('Error: The uploaded file does not exist');
-}
 
-// check for errors in the CSV file
-$res = array();
-foreach ($mam_csv as $item) {
-    $res[] = array_map('trim', $item);
-}
-setLines($res);
+    // init data
+    $csv = ImportOrders::init_import_csv($mam_file);
 
-// Import the file
-if ($mam_action == 'Import the file') {
-    $check = true;
-    if (!empty($mam_duplicatedLines)) {
-        $check = false;
+    // if error show the error
+    if (is_string($csv)) {
+        return '<h1 class="text text-danger">Error: ' . $csv . '</h1>';
     }
-    if (!empty($mam_errorLines)) {
-        $check = false;
-    }
-    if ($check) {
-        $importedOrders = 1;
-        foreach ($mam_csv as $orderData) {
-            // Set Site URL and Resource URL if Target URL / Live Link Exists
-            if ((!isset($orderData['Client Website']) || $orderData['Client Website'] == '') && (isset($orderData['Target URL']) && $orderData['Target URL'] != '')) {
-                $orderData['Client Website'] = 'https://' . domain($orderData['Target URL']);
-            }
-            $orderData['Client Name'] = $orderData['Client Website'];
-            if ((!isset($orderData['Resource URL']) || $orderData['Resource URL'] == '') && (isset($orderData['Live Link']) && $orderData['Live Link'] != '')) {
-                $orderData['Resource URL'] = domain($orderData['Live Link']);
-            }
-            $agencyID = post_exists($orderData['Agency'], '', '', 'agency');
-            if (!$agencyID) {
-                $agencyID = wp_insert_post(array(
-                    'post_title' => $orderData['Agency'],
-                    'post_type' => 'agency',
-                    'post_status' => 'publish',
-                ));
-            }
 
-            $clientID = post_exists($orderData['Client Name'], '', '', 'client');
-            if ($clientID) {
-                update_client($clientID, $agencyID, $orderData);
-            } else {
-                $clientID = wp_insert_post(array(
-                    'post_title' => $orderData['Client Name'],
-                    'post_type' => 'client',
-                    'post_status' => 'publish',
-                ));
-                update_client($clientID, $agencyID, $orderData);
-            }
+    $titles = ImportOrders::init_import_data_titles($csv->titles);
+    $titles_sectors = ImportOrders::init_import_data_titles_resource($csv->titles);
+    $warnings = array_merge($warnings, ImportOrders::init_titles_warnings($csv->titles));
+    $data = ImportOrders::init_import_data($csv->data);
+    $sectors = get_terms('sector');
 
-            $orderID = post_exists($orderData['ID'], '', '', 'lborder');
-            if ($orderID) {
-                Orders::update_order($orderID, $clientID, $orderData);
-            } else {
-                $orderID = wp_insert_post(array(
-                    'post_title' => $orderData['ID'],
-                    'post_type' => 'lborder',
-                    'post_status' => 'publish',
-                ));
-                Orders::update_order($orderID, $clientID, $orderData);
-            }
-            $importedOrders = $importedOrders + 1;
+    ob_start();
+
+    ?>
+    <div class="import-table-item"><h1>Importing Orders</h1></div>
+    <?php
+    if (!empty($warnings)) {
+        echo '<h1 class="text text-danger">Please Check The Warnings Below:</h1>';
+        foreach ($warnings as $warning) {
+            echo '<p class="text text-danger"> ' . $warning . '</p>';
         }
     }
-}
+    ?>
+    <h2 class="existing-order-h1"><i class="fas fa-sort-down"></i> Existing Orders</h2>
 
-get_header(); ?>
-<main id="content">
-    <div class="container">
+    <div class="existing-order-content">
+        <div class="counter" style="padding-left:15px;">
+            <input type="submit" class="btn btn-primary import-existing-order-all" value="Import All">
+            <span class="import-all-existing-order-completed">0</span> /
+            <span class="import-all-existing-order-total">0</span>
+        </div>
+
+        <?php
+        foreach ($data as $row) {
+            $_orderPostID = Orders::get_order($row['id']);
+            ?>
+            <?php if ($_orderPostID) { ?>
+                <div class="import-table-item" data-name="<?php echo $row['id']; ?>">
+                    <h3><?php echo $row['id']; ?></h3>
+                    <form>
+                        <table class="dataTable">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <?php
+                                foreach ($titles as $title) {
+                                    ?>
+                                    <th><?php echo strtoupper($title); ?></th>
+                                    <?php
+                                }
+                                ?></tr>
+                            </thead>
+                            <tbody>
+                            <tr class="existing">
+                                <td><b>Existing</b></td>
+                                <?php
+                                foreach ($titles as $title) {
+                                    if ($title == 'id') {
+                                        ?>
+                                        <th>
+                                            <a data-type="iframe" href="<?php echo get_permalink($_orderPostID); ?>" target="_blank" data-fancybox="">
+                                                <?php echo Orders::get_existing_column_text_value($title, $_orderPostID); ?>
+                                            </a>
+                                        </th>
+                                        <?php
+                                    } else {
+                                        ?>
+                                        <td><?php echo Orders::get_existing_column_text_value($title, $_orderPostID); ?></td>
+                                        <?php
+                                    }
+                                }
+                                ?>
+                            </tr>
+                            <tr class="new">
+                                <td><b>CSV</b></td>
+                                <?php
+                                foreach ($titles as $title) {
+                                    ?>
+                                    <td><?php echo $row[$title]; ?></td>
+                                    <?php
+                                }
+                                ?>
+                            </tr>
+                            <tr class="import">
+                                <td><b>Import</b></td>
+                                <?php
+                                foreach ($titles as $title) {
+                                    $finale_value = Orders::get_existing_column_text_value($title, $_orderPostID);
+                                    if (!$finale_value) {
+                                        $finale_value = $row[$title];
+                                    }
+                                    ?>
+                                    <td><input type="text" name="<?php echo Orders::get_field_name_by_column_name($title); ?>" value="<?php echo $finale_value; ?>"/></td>
+                                    <?php
+                                }
+                                ?>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <input type="hidden" name="orderPostID" value="<?php echo $_orderPostID; ?>">
+                        <input type="hidden" name="action" value="import_existing_order">
+                        <input type="button" class="btn btn-primary import import-existing-order" value="Import">
+                        <input type="button" class="btn btn-primary cancel" data-target="<?php echo $row['id']; ?>" value="Cancel">
+                        <input type="button" class="btn btn-primary undo" data-target="<?php echo $row['id']; ?>" value="Undo">
+                    </form>
+                </div>
+            <?php } ?>
+
+        <?php } ?>
+    </div>
+
+
+    <h2 class="new-order-h1"><i class="fas fa-sort-down"></i> New Orders</h2>
+    <div class="new-order-content">
+        <div class="import-table-item">
+            <div class="counter" style="padding-left:15px;">
+                <input type="submit" class="btn btn-primary import-new-order-all" value="Import All">
+                <span class="import-all-new-order-completed">0</span> / <span class="import-all-new-order-total">0</span>
+            </div>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <?php
+                    foreach ($titles as $title) {
+                        ?>
+                        <th><?php echo strtoupper($title); ?></th>
+                        <?php
+                    }
+                    ?></tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <?php
+            foreach ($data as $_row) {
+                $_orderPostID = Orders::get_order($_row['id']);
+                ?>
+                <?php if (!$_orderPostID) { ?>
+                    <form>
+                        <table>
+                            <tr class="import" data-name="<?php echo $_row['id']; ?>">
+                                <td>
+                                    <input type="hidden" name="action" value="import_new_order">
+                                    <input type="button" class="btn btn-primary import import-new-order" value="Import">
+                                    <input type="button" class="btn btn-primary cancel" data-target="<?php echo $_row['id']; ?>" value="Cancel">
+                                    <input type="button" class="btn btn-primary undo" data-target="<?php echo $_row['id']; ?>" value="Undo">
+                                </td>
+                                <?php
+                                foreach ($titles as $title) {
+                                    $finale_value = $_row[$title];
+                                    ?>
+                                    <td><input type="text" name="<?php echo Orders::get_field_name_by_column_name($title); ?>" value="<?php echo $finale_value; ?>"/></td>
+                                    <?php
+                                }
+                                ?>
+                            </tr>
+                        </table>
+                    </form>
+                <?php }
+            } ?>
+        </div>
+    </div>
+
+    <div class="import-table-item"><h1>Importing Resources</h1></div>
+    <h2 class="existing-h1"><i class="fas fa-sort-down"></i> Existing Resources</h2>
+    <div class="existing-content">
+        <div class="counter" style="padding-left:15px;"><input type="submit" class="btn btn-primary import-existing-all" value="Import All"> <span class="import-all-completed">0</span> / <span class="import-all-total">0</span></div>
         <?php
 
-
-        echo '<h1>Orders: ' . $mam_action . '</h1>';
-
-        if (!empty($mam_new_order)) {
-            echo '<h3>New Orders: (' . count($mam_new_order) . ')</h3>';
-            echo '<div>' . implode('<br /> ', $mam_new_order) . '</div>';
-        }
-
-        if (!empty($mam_existing_order)) {
-            echo '<h3>Existing Orders: (' . count($mam_existing_order) . ')</h3>';
-            echo '<div>' . implode('<br /> ', $mam_existing_order) . '</div>';
-        }
-
-        if (!empty($mam_new_client)) {
-            echo '<h3>New Clients: (' . count($mam_new_client) . ')</h3>';
-            echo '<div>' . implode('<br /> ', $mam_new_client) . '</div>';
-        }
-
-        if (!empty($mam_existing_client)) {
-            echo '<h3>Existing Clients: (' . count($mam_existing_client) . ')</h3>';
-            echo '<div>' . implode('<br /> ', $mam_existing_client) . '</div>';
-        }
-
-        if (!empty($mam_new_agency)) {
-            echo '<h3>New Agency: (' . count($mam_new_agency) . ')</h3>';
-            echo '<div>' . implode('<br /> ', $mam_new_agency) . '</div>';
-        }
-
-        if (!empty($mam_existing_agency)) {
-            echo '<h3>Existing Agency: (' . count($mam_existing_agency) . ')</h3>';
-            echo '<div>' . implode('<br /> ', $mam_existing_agency) . '</div>';
-        }
-
-        if (!empty($mam_duplicatedLines)) {
-            echo '<h3>Duplicated: (' . count($mam_duplicatedLines) . ')</h3>';
-            echo '<div>' . implode('<br /> ', $mam_duplicatedLines) . '</div>';
-        }
-
-        if (!empty($mam_errorLines)) {
-            echo '<h3>Errors: (' . count($mam_errorLines) . ')</h3>';
-            echo '<div>' . implode('<br /> ', $mam_errorLines) . '</div>';
-        }
-
-        if (!empty($mam_new_sectors)) {
-            echo '<h3>New Sectors: (' . count($mam_new_sectors) . ')</h3>';
-            echo '<div>' . implode('<br /> ', $mam_new_sectors) . '</div>';
-        }
-
-        if ($mam_action == 'Import the file') {
-            echo '<h1>Import the file</h1>';
-            $check = true;
-            if (!empty($mam_duplicatedLines)) {
-                echo '<h2>Please fix the duplicated lines in the file before you import.</h2>';
-                $check = false;
+        $resources = array();
+        foreach ($data as $row) {
+            $row['website'] = ImportOrders::domain($row['live link']);
+            if(in_array($row['website'], $resources)){
+                continue;
             }
-            if (!empty($mam_errorLines)) {
-                echo '<h2>Please fix the errors in the file before you import.</h2>';
-                $check = false;
-            }
-            if ($check) {
-                echo '<h3>Imported Orders: (' . ($importedOrders - 1) . ')</h3>';
-            }
-        }
+            $resources[] = $row['website'];
 
-        ?>
+            if(!isset($row['email'])){
+                $row['email'] = '';
+            }
+            if(!isset($row['finale price'])){
+                $row['finale price'] = $row['usd price'];
+            }
+            if(!isset($row['sectors'])){
+                $row['sectors'] = '';
+            }
+            $_resourcePostID = Resources::get_resource($row['website']);
+            ?>
+            <?php if ($_resourcePostID) { ?>
+                <div class="import-table-item" data-name="<?php echo $row['website']; ?>">
+                    <h4><?php echo $row['website']; ?></h4>
+                    <form>
+                        <table class="dataTable">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <?php
+                                foreach ($titles_sectors as $title) {
+                                    ?>
+                                    <th><?php echo strtoupper($title); ?></th>
+                                    <?php
+                                }
+                                ?></tr>
+                            </thead>
+                            <tbody>
+                            <tr class="existing">
+                                <td><b>Existing</b></td>
+                                <?php
+                                foreach ($titles_sectors as $title) {
+                                    if ($title == 'website') {
+                                        ?>
+                                        <th>
+                                            <a data-type="iframe" href="<?php echo get_permalink($_resourcePostID); ?>" target="_blank" data-fancybox="">
+                                                <?php echo Resources::get_existing_column_text_value($title, $_resourcePostID); ?>
+                                            </a>
+                                        </th>
+                                        <?php
+                                    } else {
+                                        ?>
+                                        <td><?php echo Resources::get_existing_column_text_value($title, $_resourcePostID); ?></td>
+                                        <?php
+                                    }
+                                }
+                                ?>
+                            </tr>
+                            <tr class="new">
+                                <td><b>CSV</b></td>
+                                <?php
+                                foreach ($titles_sectors as $title) {
+                                    ?>
+                                    <td><?php echo $row[$title]; ?></td>
+                                    <?php
+                                }
+                                ?>
+                            </tr>
+                            <tr class="import">
+                                <td><b>Import</b></td>
+                                <?php
+                                foreach ($titles_sectors as $title) {
+                                    $finale_value = $row[$title];
+                                    if (!$row[$title]) {
+                                        $finale_value = Resources::get_existing_column_text_value($title, $_resourcePostID);
+                                    }
+                                    if ($title == 'sectors') {
+                                        $_sectors = explode(', ', $finale_value);
+                                        ?>
 
+                                        <td class="sector">
+                                            <select name="sectors[]" title="Select sectors" data-live-search="true" multiple="multiple"
+                                                    class="form-control selectpicker" id="sectors">
+                                                <?php foreach ($sectors as $sector) { ?>
+                                                    <option value="<?php echo $sector->name; ?>" <?php if (in_array($sector->name, $_sectors)) { ?> selected <?php } ?>><?php echo $sector->name; ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </td>
+                                    <?php } else { ?>
+                                        <td><input type="text" name="<?php echo Resources::get_field_name_by_column_name($title); ?>" value="<?php echo $finale_value; ?>"/></td>
+                                    <?php } ?>
+                                    <?php
+                                }
+                                ?>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <input type="hidden" name="resourcePostID" value="<?php echo $_resourcePostID; ?>">
+                        <input type="hidden" name="action" value="import_existing_resource">
+                        <input type="button" class="btn btn-primary import-existing-resource import" value="Import">
+                        <input type="button" class="btn btn-primary cancel" data-target="<?php echo $row['website']; ?>" value="Cancel">
+                        <input type="button" class="btn btn-primary undo" data-target="<?php echo $row['website']; ?>" value="Undo">
+                    </form>
+                </div>
+            <?php }
+        } ?>
     </div>
-</main>
+    <h2 class="new-h1"><i class="fas fa-sort-down"></i> New Resources</h2>
+    <div class="new-content">
+        <div class="import-table-item">
+            <div class="counter" style="padding-left:15px;">
+                <input type="submit" class="btn btn-primary import-new-all" value="Import All">
+                <span class="import-all-new-completed">0</span> / <span class="import-all-new-total">0</span>
+            </div>
 
-<?php
-
-
-function setLines($lines)
-{
-    global $mam_errorLines, $mam_new_sectors,
-           $mam_new_order, $mam_existing_order, $mam_new_client, $mam_existing_client,
-           $mam_new_agency, $mam_existing_agency;
-
-    if (!is_admin()) {
-        require_once(ABSPATH . 'wp-admin/includes/post.php');
-    }
-
-    $count = 1;
-    foreach ($lines as $line) {
-
-        // $mam_new_order, $mam_existing_order
-        if (post_exists($line['ID'], '', '', 'lborder')) {
-            $mam_existing_order[] = (1 + $count) . ': ' . $line['ID'];
-        } else {
-            $mam_new_order[] = (1 + $count) . ': ' . $line['ID'];
-        }
-
-        if ((!isset($line['Client Website']) || $line['Client Website'] == '') && (isset($line['Target URL']) && $line['Target URL'] != '')) {
-            $line['Client Website'] = 'https://' . domain($line['Target URL']);
-        }
-        $line['Client Name'] = domain($line['Client Website']);
-        if(!$line['Client Name']){
-            continue;
-        }
-
-        // $mam_new_client, $mam_existing_client
-        if (post_exists($line['Client Name'], '', '', 'client')) {
-            $mam_existing_client[] = (1 + $count) . ': ' . $line['Client Name'];
-        } else {
-            $mam_new_client[] = (1 + $count) . ': ' . $line['Client Name'];
-        }
-
-        // $mam_new_agency and $mam_existing_agency
-        if (post_exists($line['Agency'], '', '', 'agency')) {
-            $mam_existing_agency[] = (1 + $count) . ': ' . $line['Agency'];
-        } else {
-            $mam_new_agency[] = (1 + $count) . ': ' . $line['Agency'];
-        }
-
-        // $mam_errorLines
-        if (strlen($line['ID']) < 2) {
-            $mam_errorLines[] = (1 + $count) . ': Invalid ID: ' .$line['ID'];
-        }
-        /*
-        if (strlen($line['Client Name']) < 2) {
-            $mam_errorLines[] = (1 + $count) . ': Invalid Client Name: ' . $line['Client Name'];
-        }*/
-        if (strlen($line['Client Website']) < 2) {
-            $mam_errorLines[] = (1 + $count) . ': Invalid client Website';
-        }
-        if (strlen($line['Agency']) < 2) {
-            $mam_errorLines[] = (1 + $count) . ': Invalid Agency name';
-        }
-        if (strlen($line['Target URL']) < 2) {
-            $mam_errorLines[] = (1 + $count) . ': Invalid Target URL';
-        }
-        if ((!isset($line['Resource URL']) || $line['Resource URL'] == '') && (isset($line['Live Link']) && $line['Live Link'] != '')) {
-            $line['Resource URL'] = domain($line['Live Link']);
-        }
-
-        // $mam_new_sectors
-        if (isset($line['Sectors']) && $line['Sectors'] != '') {
-            $sectors = explode(', ', $line['Sectors']);
-            foreach ($sectors as $sector) {
-                if (!term_exists($sector, 'sector')) {
-                    if (!in_array($sector, $mam_new_sectors)) {
-                        $mam_new_sectors[] = $count . ': ' . $sector;
+            <table>
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Website</th>
+                    <?php
+                    foreach ($titles_sectors as $title) {
+                        if($title == 'website'){
+                            continue;
+                        }
+                        ?>
+                        <th><?php echo strtoupper($title); ?></th>
+                        <?php
                     }
+                    ?></tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <?php
+            $resources = array();
+            foreach ($data as $row) {
+                $row['website'] = ImportOrders::domain($row['live link']);
+                if(in_array($row['website'], $resources)){
+                    continue;
                 }
-            }
-        }
-        $count = $count + 1;
-    }
+                $resources[] = $row['website'];
+                if(!isset($row['email'])){
+                    $row['email'] = '';
+                }
+                if(!isset($row['finale price'])){
+                    $row['finale price'] = $row['usd price'];
+                }
+                if(!isset($row['sectors'])){
+                    $row['sectors'] = '';
+                }
+                $_resourcePostID = Resources::get_resource($row['website']);
+                ?>
+                <?php if (!$_resourcePostID) { ?>
+                    <form>
+                        <table>
+                            <tr class="import" data-name="<?php echo $row['website']; ?>">
+                                <td>
+                                    <input type="hidden" name="action" value="import_new_resource">
+                                    <input type="button" class="btn btn-primary import import-new-resource" value="Import">
+                                    <input type="button" class="btn btn-primary cancel" data-target="<?php echo $row['website']; ?>" value="Cancel">
+                                    <input type="button" class="btn btn-primary undo" data-target="<?php echo $row['website']; ?>" value="Undo">
+                                </td>
+                                <td><input type="text" name="<?php echo Resources::get_field_name_by_column_name('website'); ?>" value="<?php echo $row['website']; ?>"/></td>
+                                <?php
+                                foreach ($titles_sectors as $title) {
+                                    if($title == 'website'){
+                                        continue;
+                                    }
+                                    $finale_value = $row[$title];
+                                    ?>
+                                    <?php
+                                    if ($title == 'sectors') {
+                                        $_sectors = explode(', ', $finale_value);
+                                        ?>
+
+                                        <td class="sector">
+                                            <select name="sectors[]" title="Select sectors" data-live-search="true" multiple="multiple"
+                                                    class="form-control selectpicker" id="sectors">
+                                                <?php foreach ($sectors as $sector) { ?>
+                                                    <option value="<?php echo $sector->name; ?>" <?php if (in_array($sector->name, $_sectors)) { ?> selected <?php } ?>><?php echo $sector->name; ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </td>
+                                    <?php } else { ?>
+                                        <td><input type="text" name="<?php echo Resources::get_field_name_by_column_name($title); ?>" value="<?php echo $finale_value; ?>"/></td>
+                                    <?php } ?>
+                                    <?php
+                                }
+                                ?>
+                            </tr>
+                        </table>
+                    </form>
+                <?php }
+            } ?>
+        </div>
+    </div>
+
+    <?php
+    return ob_get_clean();
 }
 
-function update_client($clientID, $agencyID, $orderData)
-{
-    if (isset($agencyID)) {
-        update_field('agency', $agencyID, $clientID);
-    }
-    if (isset($orderData['Client Website'])) {
-        update_field('website', $orderData['Client Website'], $clientID);
-    }
-}
-
-function url_exists($url)
-{
-    return curl_init($url) !== false;
-}
-
-function domain($url)
-{
-    $url = strtolower($url);
-
-    $host = parse_url( $url, PHP_URL_HOST);
-    return str_replace('www.', '', $host);
-}
-
-?>
-
-<?php get_footer(); ?>
+echo proccess_csv();
+get_footer();

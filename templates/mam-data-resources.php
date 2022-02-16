@@ -2,10 +2,6 @@
 
 use MAM\Plugin\Services\Admin\Resources;
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 // the finale array that will be converted to json
 $json = array();
 
@@ -14,14 +10,17 @@ $json['draw'] = $_POST['draw'];
 
 
 // init user columns
-$columns_list = array("Website", "Email","IP Address", "Name", "DA", "DR", "RD", "TR", "PA", "TF", "CF", "Organic Keywords", "Country", "Currency",
+$columns_list = array("Website", "Email", "IP Address", "DA", "DR", "RD", "TR", "PA", "TF", "CF", "Organic Keywords", "Country", "Status", "Currency",
     "Original Price", "Casino Price", "CBD Price", "Adult Price", "Link Placement Price", "Package / Discount", "Finale Price",
-    "Payment Method", "Notes", "Secondary Email", "Origin File", "Rating", "Status", "Metrics Update Date", "Sectors", "Niche", "New Remarks", "Social Media", "Other Info", "Contact / Email");
+    "Payment Method", "Notes", "Secondary Email", "Metrics Update Date", "Sectors", "Niche", "New Remarks", "Social Media", "Other Info");
+
+$columns_list_default =  array("Website", "Currency", "Finale Price", "DA", "DR", "RD", "TR", "Sectors", "Niche");
+
 $resource_columns_raw = get_field('resources_columns', 'user_' . get_current_user_id());
 if ($resource_columns_raw) {
     $resource_columns = json_decode($resource_columns_raw, true);
 } else {
-    $resource_columns = $columns_list;
+    $resource_columns = $columns_list_default;
 }
 
 
@@ -36,7 +35,7 @@ $column_order = 1;
 if(isset($resource_columns[($filters['order']['column'] - 1)])){
     $column_order = $resource_columns[($filters['order']['column'] - 1)];
 }
-$filters['order']['field'] = Resources::get_filed_name_by_column_name($column_order);
+$filters['order']['field'] = Resources::get_field_name_by_column_name($column_order);
 
 /**
  * Get the filters from the current URL
@@ -68,7 +67,7 @@ function mam_get_filters_from_table($filters, $resource_columns){
                 $column_order = $resource_columns[$column['data'] - 1];
             }
             $item = array();
-            $item['name'] = Resources::get_filed_name_by_column_name($column_order);
+            $item['name'] = Resources::get_field_name_by_column_name($column_order);
             $item['value'] = $column['search']['value'];
             $_filters['search'][] = $item;
         }
@@ -110,20 +109,22 @@ if( $the_query->have_posts() ){
                 continue;
             }
         }
-
+        if(Resources::get_status($id) == 'Do Not Use'){
+            continue;
+        }
         $itemData = array(
             'Website' => '<a data-type="iframe" href="'. get_the_permalink($id).'" target="_blank" data-fancybox>'. get_the_title($id).'</a>',
             'IP Address' => get_field('ip_address', $id),
             'Email' => get_field('email', $id),
             'Name' => get_field('contact_name', $id),
-            'DA' => get_field('da', $id),
-            'DR' => get_field('dr', $id),
-            'RD' => get_field('rd', $id),
-            'TR' => get_field('tr', $id),
-            'PA' => get_field('pa', $id),
-            'TF' => get_field('tf', $id),
-            'CF' => get_field('cf', $id),
-            'Organic Keywords' => get_field('organic_keywords', $id),
+            'DA' => '<a target="_blank" href="https://mamdevsite.com/mam-lb/mam-update-metrics/?website='.$id . '"><abbr title="Last Updated On: ' . get_field('metrics_update_date', $id) . '"><img style="background-color: #3498db;" src="https://websiteseochecker.com/wsc-logo-seo5.png" width="32" /> ' . get_field('da', $id) . '</abbr></a>',
+            'DR' => '<a target="_blank" href="https://mamdevsite.com/mam-lb/mam-update-metrics/?website='.$id . '"><abbr title="Last Updated On: ' . get_field('metrics_update_date', $id) . '"><img src="https://static.ahrefs.com/favicon-16x16.png" width="16" /> ' .get_field('dr', $id) . '</abbr></a>',
+            'RD' => '<a target="_blank" href="https://mamdevsite.com/mam-lb/mam-update-metrics/?website='.$id . '"><abbr title="Last Updated On: ' . get_field('metrics_update_date', $id) . '"><img src="https://static.ahrefs.com/favicon-16x16.png" width="16" /> ' .get_field('rd', $id) . '</abbr></a>',
+            'TR' => '<a target="_blank" href="https://mamdevsite.com/mam-lb/mam-update-metrics/?website='.$id . '"><abbr title="Last Updated On: ' . get_field('metrics_update_date', $id) . '"><img src="https://static.ahrefs.com/favicon-16x16.png" width="16" /> ' .get_field('tr', $id) . '</abbr></a>',
+            'PA' => '<a target="_blank" href="https://mamdevsite.com/mam-lb/mam-update-metrics/?website='.$id . '"><abbr title="Last Updated On: ' . get_field('metrics_update_date', $id) . '"><img style="background-color: #3498db;" src="https://websiteseochecker.com/wsc-logo-seo5.png" width="32" /> ' . get_field('pa', $id) . '</abbr></a>',
+            'TF' => '<a target="_blank" href="https://mamdevsite.com/mam-lb/mam-update-metrics/?website='.$id . '"><abbr title="Last Updated On: ' . get_field('metrics_update_date', $id) . '"><img style="background-color: #3498db;" src="https://websiteseochecker.com/wsc-logo-seo5.png" width="32" /> ' . get_field('tf', $id) . '</abbr></a>',
+            'CF' => '<a target="_blank" href="https://mamdevsite.com/mam-lb/mam-update-metrics/?website='.$id . '"><abbr title="Last Updated On: ' . get_field('metrics_update_date', $id) . '"><img style="background-color: #3498db;" src="https://websiteseochecker.com/wsc-logo-seo5.png" width="32" /> ' . get_field('cf', $id) . '</abbr></a>',
+            'Organic Keywords' => '<a target="_blank" href="https://mamdevsite.com/mam-lb/mam-update-metrics/?website='.$id . '"><abbr title="Last Updated On: ' . get_field('metrics_update_date', $id) . '"><img src="https://static.ahrefs.com/favicon-16x16.png" width="16" /> ' .get_field('organic_keywords', $id) . '</abbr></a>',
             'Currency' => get_field('currency', $id),
             'Country' => get_field('country', $id),
             'Original Price' => get_field('original_price', $id),
@@ -138,9 +139,9 @@ if( $the_query->have_posts() ){
             'Secondary Email' => get_field('secondary_email', $id),
             'Origin File' => get_field('origin_file', $id),
             'Rating' => get_field('rating', $id),
-            'Status' => get_field('status', $id),
+            'Status' => Resources::get_status($id),
             'Metrics Update Date' => get_field('metrics_update_date', $id),
-            'Sectors' => implode(', ', wp_get_object_terms($id, 'sector', array('fields' => 'names'))),
+            'Sectors' => Resources::get_resource_sectors_text($id),
             'Niche' => get_field('niche', $id),
             'New Remarks' => get_field('new_remarks', $id),
             'Social Media' => get_field('social_media', $id),

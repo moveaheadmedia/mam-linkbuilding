@@ -84,13 +84,13 @@ if (!function_exists('elementor_theme_do_location') || !elementor_theme_do_locat
             ?>
             <div class="container">
                 <br/>
-                <button class="btn btn-default" type="submit" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
+                <button class="btn btn-default" type="submit" data-toggle="collapse" href="#columns" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
                 <div class="table-columns collapse" id="columns">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="av-list">
                                 <br/>
-                                <h2><label for="columnsList">Showing Columns</label></h2>
+                                <h2>Showing Columns</h2>
                                 <select class="selectpicker" id="columnsList" multiple data-actions-box="true">
                                     <?php
                                     foreach ($columns_list as $item) {
@@ -138,8 +138,8 @@ if (!function_exists('elementor_theme_do_location') || !elementor_theme_do_locat
         <div class="container">
             <div class="responsive-table">
                 <div class="float-right">
-                    <a href="#" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
-                    <a href="#" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
+                    <a href="#/" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
+                    <a href="#/" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
                 </div>
                 <table class="table datatable">
                     <thead class="thead-dark">

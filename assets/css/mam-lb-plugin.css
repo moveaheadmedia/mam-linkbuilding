@@ -112,3 +112,55 @@ div#DataTables_Table_0_processing {
     margin: 0;
     padding-top: 50%;
 }
+
+.import-table-item h1, .import-table-item h3 {
+    margin-bottom: 0px;
+    margin-top: 60px;
+}
+.import-table-item{
+    padding: 15px;
+    overflow: visible;
+    margin: 0 auto;
+}
+.import-table-item .dataTable{
+    max-width: 100%;
+}
+.undo {
+    display: none !important;
+}
+.cancelled .undo {
+    display: block !important;
+}
+.cancelled.imported .undo {
+    display: none !important;
+}
+.cancelled .cancel, .cancelled .import, .cancelled table{
+    display: none !important;
+}
+
+.existing-content, .new-content, .existing-order-content, .new-order-content{
+    display:none !important;
+}
+
+.existing-content.active, .new-content.active, .existing-order-content.active, .new-order-content.active{
+    display:block !important;
+}
+h2.existing-h1, h2.new-h1, h2.existing-order-h1, h2.new-order-h1{
+    padding: 0 15px;
+    color: orange;
+    cursor: pointer;
+}
+.import-existing-all{
+    margin-left: 15px;
+}
+td.sector{
+    overflow: visible !important;
+}
+.new-content th, .new-content td {
+    max-width: 100px;
+    width: 100px;
+}
+.new-content td, .new-content th {
+    min-width: 150px;
+    width: 150px;
+}

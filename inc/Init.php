@@ -4,6 +4,7 @@
 namespace MAM\Plugin;
 
 
+use MAM\Plugin\Services\Admin\HotFix;
 use MAM\Plugin\Services\Admin\Users;
 use MAM\Plugin\Services\Admin\Export;
 use MAM\Plugin\Services\Admin\Import;
@@ -42,6 +43,7 @@ final class Init
             DataLoader::class,
             ImportOrders::class,
             ImportResources::class,
+            HotFix::class,
         ];
     }
 

@@ -675,8 +675,7 @@ set the price if there is a special price.',
                         ),
                         'choices' => array(
                             'Confirmed' => 'Confirmed',
-                            'Do not use' => 'Do not use',
-                            'Raw' => 'Raw',
+                            'Do not use' => 'Do Not Use',
                         ),
                         'default_value' => false,
                         'allow_null' => 0,
@@ -703,6 +702,27 @@ set the price if there is a special price.',
                         'return_format' => 'Y-m-d',
                         'first_day' => 1,
                     ),
+	                array(
+		                'key' => 'field_6163c8f63c3bc',
+		                'label' => 'Price in USD',
+		                'name' => 'price_in_usd',
+		                'type' => 'number',
+		                'instructions' => '',
+		                'required' => 0,
+		                'conditional_logic' => 0,
+		                'wrapper' => array(
+			                'width' => '',
+			                'class' => '',
+			                'id' => '',
+		                ),
+		                'default_value' => '',
+		                'placeholder' => '',
+		                'prepend' => '',
+		                'append' => '',
+		                'min' => '',
+		                'max' => '',
+		                'step' => '',
+	                ),
                 ),
                 'location' => array(
                     array(
@@ -812,7 +832,7 @@ set the price if there is a special price.',
 
         if (isset($filters['price']) && $filters['price'] != '') {
             $meta_query[] = [
-                'key' => 'original_price',
+                'key' => 'price_in_usd',
                 'value' => $filters['price'],
                 'compare' => '>=',
                 'type' => 'NUMERIC',
@@ -821,7 +841,7 @@ set the price if there is a special price.',
 
         if (isset($filters['price1']) && $filters['price1'] != '') {
             $meta_query[] = [
-                'key' => 'original_price',
+                'key' => 'price_in_usd',
                 'value' => $filters['price1'],
                 'compare' => '<=',
                 'type' => 'NUMERIC',
@@ -1089,79 +1109,87 @@ set the price if there is a special price.',
      * @param $column_name string the column name
      * @return string the meta name
      */
-    public static function get_filed_name_by_column_name($column_name)
+    public static function get_field_name_by_column_name($column_name)
     {
-        switch ($column_name) {
-            case "Website":
+        if(strpos(strtolower($column_name), 'sector') !== false){
+            return 'sectors';
+        }
+        switch (strtolower($column_name)) {
+            case "website":
+            case "url":
                 return 'title';
-            case 'IP Address':
+            case 'ip address':
                 return 'ip_address';
-            case 'Other Info':
+            case 'other info':
                 return 'other_info';
-            case 'Contact / Email':
-                return 'contact__email';
-            case 'Social Media':
+            case 'social media':
                 return 'social_media';
-            case 'New Remarks':
+            case 'new remarks':
                 return 'new_remarks';
-            case 'Niche':
+            case 'niche':
                 return 'niche';
-            case 'Sectors':
+            case 'sectors':
                 return 'sectors';
-            case 'Metrics Update Date':
+            case 'metrics update date':
                 return 'metrics_update_date';
-            case 'Status':
+            case 'status':
                 return 'status';
-            case 'Rating':
+            case 'rating':
                 return 'rating';
-            case 'Origin File':
+            case 'origin file':
                 return 'origin_file';
-            case 'Secondary Email':
+            case 'secondary email':
                 return 'secondary_email';
-            case 'Notes':
+            case 'notes':
                 return 'notes';
-            case 'Payment Method':
+            case 'payment method':
                 return 'payment_method';
-            case 'Finale Price':
+            case 'finale price':
                 return 'price';
-            case 'Package / Discount':
+            case 'package / discount':
                 return 'package__discount';
-            case 'Link Placement Price':
+            case 'link placement price':
                 return 'link_placement_price';
-            case 'Adult Price':
+            case 'adult price':
                 return 'adult_price';
-            case 'CBD Price':
+            case 'cbd price':
                 return 'cbd_price';
-            case 'Casino Price':
+            case 'casino price':
                 return 'casino_price';
-            case 'Original Price':
+            case 'original price':
                 return 'original_price';
-            case 'Country':
+            case 'country':
                 return 'country';
-            case 'Currency':
+            case 'currency':
                 return 'currency';
-            case 'Organic Keywords':
+            case 'organic keywords':
                 return 'organic_keywords';
-            case 'CF':
+            case 'cf':
                 return 'cf';
-            case 'TF':
+            case 'tf':
                 return 'tf';
-            case 'PA':
+            case 'pa':
                 return 'pa';
-            case 'TR':
+            case 'tr':
                 return 'tr';
-            case 'RD':
+            case 'rd':
                 return 'rd';
-            case 'DR':
+            case 'dr':
                 return 'dr';
-            case 'DA':
+            case 'da':
                 return 'da';
-            case 'Name':
-                return 'contact_name';
-            case 'Email':
+            case 'email':
                 return 'email';
         }
-        return 'title';
+        return '';
+    }
+
+    public static function get_status($id){
+        $status = 'Confirmed';
+        if(strtolower(get_field('status', $id)) == 'do not use'){
+            $status = 'Do Not Use';
+        }
+        return $status;
     }
 
     /**
@@ -1176,6 +1204,8 @@ set the price if there is a special price.',
         if ( $search_term = $wp_query->get( 'search_prod_title' ) ) {
             if($search_term != ''){
                 $where .= ' AND ' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql( like_escape( $search_term ) ) . '%\'';
+                var_dump($search_term);
+                die();
             }
         }
         return $where;
@@ -1222,5 +1252,52 @@ set the price if there is a special price.',
             }
         }
         return false;
+    }
+
+
+
+    /**
+     * Get the resource post ID by website URL (or 0 if the website URL not found)
+     * @param $resource_url string the resource URL
+     * @return int post ID when the order is found or 0 when the order is not found
+     */
+    public static function get_resource($resource_url)
+    {
+        if ( ! is_admin() ) {
+            require_once( ABSPATH . 'wp-admin/includes/post.php' );
+            return post_exists($resource_url, '', '', 'resources');
+        }
+        return 0;
+    }
+
+    /**
+     * Get column value by column name from existing resource
+     * @param $column_name string the column name
+     * @param $_resourcePostID int the resource post id
+     * @return mixed|string
+     */
+    public static function get_existing_column_text_value($column_name, $_resourcePostID)
+    {
+        if($column_name == 'url'){
+            return get_the_title($_resourcePostID);
+        }
+        if($column_name == 'website'){
+            return get_the_title($_resourcePostID);
+        }
+        if($column_name == 'sectors'){
+            return Resources::get_resource_sectors_text($_resourcePostID);
+        }
+        return get_field(Resources::get_field_name_by_column_name($column_name), $_resourcePostID);
+    }
+
+
+    /**
+     * Get sectors string value by resource postID
+     * @param $_resourcePostID int the resource post id
+     * @return mixed|string
+     */
+    public static function get_resource_sectors_text($_resourcePostID)
+    {
+        return implode(', ', wp_get_object_terms($_resourcePostID, 'sector', array('fields' => 'names')));
     }
 }

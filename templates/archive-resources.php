@@ -97,7 +97,7 @@ if (isset($_GET['sectors'])) {
 ?>
 <div class="container">
     <br/>
-    <button class="btn btn-default" type="submit" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="filters">Filters</button>
+    <button class="btn btn-default" type="submit" data-toggle="collapse" href="#filters" role="button" aria-expanded="false" aria-controls="filters">Filters</button>
     <div class="filters <?php if (mam_check_filters($filters)) { ?>collapse <?php } ?>" id="filters">
         <form method="get" action="">
             <div class="row">
@@ -120,7 +120,7 @@ if (isset($_GET['sectors'])) {
 
                         <p>
                             <label for="da">DA:</label>
-                            <input type="text" id="da" name="da" style="background-color: #eee;border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['da']; ?>, <?php echo $filters['da1']; ?>]" value="<?php echo $filters['da']; ?> - <?php echo $filters['da1']; ?>">
+                            <input type="text" id="da" name="da" style="background-color: #eee;border:0; color:#f6931f; font-weight:bold;border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['da']; ?>, <?php echo $filters['da1']; ?>]" value="<?php echo $filters['da']; ?> - <?php echo $filters['da1']; ?>">
                         </p>
                         <div id="daSlider"></div>
                     </div>
@@ -131,7 +131,7 @@ if (isset($_GET['sectors'])) {
 
                         <p>
                             <label for="dr">DR:</label>
-                            <input type="text" id="dr" name="dr" style="background-color: #eee;border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['dr']; ?>,<?php echo $filters['dr1']; ?>]" value="<?php echo $filters['dr']; ?> - <?php echo $filters['dr1']; ?>">
+                            <input type="text" id="dr" name="dr" style="background-color: #eee;border:0; color:#f6931f; font-weight:bold;border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['dr']; ?>,<?php echo $filters['dr1']; ?>]" value="<?php echo $filters['dr']; ?> - <?php echo $filters['dr1']; ?>">
                         </p>
                         <div id="drSlider"></div>
 
@@ -144,7 +144,7 @@ if (isset($_GET['sectors'])) {
                             <div class="form-group">
                                 <p>
                                     <label for="price">Price:</label>
-                                    <input type="text" id="price" name="price" style="background-color: #eee;border:0; color:#f6931f;" data-value="[<?php echo $filters['price']; ?>,<?php echo $filters['price1']; ?>]" value="<?php echo $filters['price']; ?> - <?php echo $filters['price1']; ?>">
+                                    <input type="text" id="price" name="price" style="background-color: #eee;border:0; color:#f6931f; font-weight:bold;border:0; color:#f6931f; font-weight:bold;" data-value="[<?php echo $filters['price']; ?>,<?php echo $filters['price1']; ?>]" value="<?php echo $filters['price']; ?> - <?php echo $filters['price1']; ?>">
                                 </p>
                                 <div id="priceSlider"></div>
                             </div>
@@ -164,7 +164,7 @@ if (isset($_GET['sectors'])) {
                     <div class="form-group">
                         <p>
                             <label for="rd">Minimum RD</label><br/>
-                            <input type="text" class="form-control" id="rd" style="background-color: #eee;border:0; color:#f6931f; font-weight:bold;" name="rd" value="<?php echo $filters['rd']; ?>" data-value="<?php echo $filters['rd']; ?>" placeholder="0">
+                            <input type="text" class="form-control" id="rd" style="background-color: #eee;border:0; color:#f6931f; font-weight:bold;border:0; color:#f6931f; font-weight:bold;" name="rd" value="<?php echo $filters['rd']; ?>" data-value="<?php echo $filters['rd']; ?>" placeholder="0">
                         </p>
                         <div id="rdSlider"></div>
                     </div>
@@ -174,7 +174,7 @@ if (isset($_GET['sectors'])) {
                     <div class="form-group">
                         <p>
                             <label for="tr">Minimum TR</label><br/>
-                            <input type="text" class="form-control" id="tr" name="tr" style="background-color: #eee;border:0; color:#f6931f; font-weight:bold;" value="<?php echo $filters['tr']; ?>" data-value="<?php echo $filters['tr']; ?>" placeholder="0">
+                            <input type="text" class="form-control" id="tr" name="tr" style="background-color: #eee;border:0; color:#f6931f; font-weight:bold;border:0; color:#f6931f; font-weight:bold;" value="<?php echo $filters['tr']; ?>" data-value="<?php echo $filters['tr']; ?>" placeholder="0">
                         </p>
                         <div id="trSlider"></div>
                     </div>
@@ -194,25 +194,28 @@ if (isset($_GET['sectors'])) {
 <?php
 $resource_columns = array();
 if (is_user_logged_in()) {
-    $columns_list = array("Website", "Email", "IP Address", "Name", "DA", "DR", "RD", "TR", "PA", "TF", "CF", "Organic Keywords", "Country", "Currency",
+    $columns_list = array("Website", "Email", "IP Address", "DA", "DR", "RD", "TR", "PA", "TF", "CF", "Organic Keywords", "Country", "Status", "Currency",
         "Original Price", "Casino Price", "CBD Price", "Adult Price", "Link Placement Price", "Package / Discount", "Finale Price",
-        "Payment Method", "Notes", "Secondary Email", "Origin File", "Rating", "Status", "Metrics Update Date", "Sectors", "Niche", "New Remarks", "Social Media", "Other Info", "Contact / Email");
+        "Payment Method", "Notes", "Secondary Email", "Metrics Update Date", "Sectors", "Niche", "New Remarks", "Social Media", "Other Info");
+
+    $columns_list_default =  array("Website", "Currency", "Finale Price", "DA", "DR", "RD", "TR", "Sectors", "Niche");
+
     $resource_columns_raw = get_field('resources_columns', 'user_' . get_current_user_id());
     if ($resource_columns_raw) {
         $resource_columns = json_decode($resource_columns_raw, true);
     } else {
-        $resource_columns = $columns_list;
+        $resource_columns = $columns_list_default;
     }
     ?>
     <div class="container">
         <br/>
-        <button class="btn btn-default" type="submit" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
+        <button class="btn btn-default" type="submit" data-toggle="collapse" href="#columns" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
         <div class="table-columns collapse" id="columns">
             <div class="row">
                 <div class="col-md-6">
                     <div class="av-list">
                         <br/>
-                        <h2><label for="columnsList">Showing Columns</label></h2>
+                        <h2>Showing Columns</h2>
                         <select class="selectpicker" id="columnsList" multiple data-actions-box="true">
                             <?php
                             foreach ($columns_list as $item) {
@@ -267,8 +270,8 @@ if (is_user_logged_in()) {
     </div>
     <div class="responsive-table">
         <div class="float-right">
-            <a href="#" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
-            <a href="#" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
+            <a href="#/" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
+            <a href="#/" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
         </div>
         <table class="table datatable server">
             <thead class="thead-dark">

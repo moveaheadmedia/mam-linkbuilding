@@ -8,7 +8,7 @@ global $_id;
 ?>
     <div class="container">
         <br/>
-        <button class="btn btn-default" type="submit" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="filters">Filters</button>
+        <button class="btn btn-default" type="submit" data-toggle="collapse" href="#filters" role="button" aria-expanded="false" aria-controls="filters">Filters</button>
         <div class="filters collapse" id="filters">
             <?php
             // init $filters
@@ -175,13 +175,13 @@ if (is_user_logged_in()) {
     ?>
     <div class="container">
         <br/>
-        <button class="btn btn-default" type="submit" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
+        <button class="btn btn-default" type="submit" data-toggle="collapse" href="#columns" role="button" aria-expanded="false" aria-controls="columns">Columns</button>
         <div class="table-columns collapse" id="columns">
             <div class="row">
                 <div class="col-md-6">
                     <div class="av-list">
                         <br/>
-                        <h2><label for="columnsList">Showing Columns</label></h2>
+                        <h2>Showing Columns</h2>
                         <select class="selectpicker" id="columnsList" multiple data-actions-box="true">
                             <?php
                             foreach ($columns_list as $item) {
@@ -233,8 +233,8 @@ $the_query = apply_filters('mam-resources-filtered-posts', $filters); ?>
     <div class="container">
         <div class="responsive-table">
             <div class="float-right">
-                <a href="#" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
-                <a href="#" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
+                <a href="#/" class="enterfullscreen btn btn-default" title="Full Screen"><i class="fas fa-expand"></i></a>
+                <a href="#/" class="existfullscreen btn btn-default" title="Exit Full Screen"><i class="fas fa-compress"></i></a>
             </div>
             <table class="table datatable server">
                 <thead class="thead-dark">
@@ -264,7 +264,9 @@ $the_query = apply_filters('mam-resources-filtered-posts', $filters); ?>
                     }
 
                     // filterprice
-                    if ($_finalePrice < $filters['price'] || $_finalePrice > $filters['price1']) {
+                    if ($_finalePrice >= $filters['price'] && $_finalePrice <= $filters['price1']) {
+
+                    } else {
                         continue;
                     }
 
@@ -273,7 +275,7 @@ $the_query = apply_filters('mam-resources-filtered-posts', $filters); ?>
                         'Email' => get_field('email', $id),
                         'Name' => get_field('contact_name', $id),
                         'DA' => get_field('da', $id),
-                        'DR' => get_field('dr', $id),
+                        'DR' => '<a href="https://ahrefs.com/site-explorer/overview/v2/subdomains/recent?target='. get_the_title($id). '" target="_blank">' .get_field('dr', $id) . '</a>',
                         'RD' => get_field('rd', $id),
                         'TR' => get_field('tr', $id),
                         'PA' => get_field('pa', $id),

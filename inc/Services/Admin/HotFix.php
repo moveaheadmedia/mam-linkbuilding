@@ -8,7 +8,7 @@ use Exception;
 use MAM\Plugin\Services\WPAPI\Endpoint;
 use MAM\Plugin\Services\ServiceInterface;
 
-class DataLoader implements ServiceInterface
+class HotFix implements ServiceInterface
 {
 
     /**
@@ -19,7 +19,7 @@ class DataLoader implements ServiceInterface
     /**
      * @var array
      */
-    private $errors;
+    protected $errors;
 
     public function __construct()
     {
@@ -32,7 +32,7 @@ class DataLoader implements ServiceInterface
     public function register()
     {
         try {
-            $this->endpoint_api->add_endpoint('mam-data-loader')->with_template('mam-data-loader.php')->register_endpoints();
+            $this->endpoint_api->add_endpoint('hot-fix')->with_template('hot-fix.php')->register_endpoints();
         } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
         }

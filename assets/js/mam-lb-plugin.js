@@ -1,4 +1,183 @@
 jQuery(document).ready(function ($) {
+    // import existing resources
+    $('.import-existing-resource').click(function(){
+        var form = $(this).parent('form');
+        var table = form.parent('div');
+        var ajaxurl = 'https://mamdevsite.com/mam-lb/wp-admin/admin-ajax.php';
+        var _data = form.serialize();
+        table.addClass('cancelled').addClass('imported');
+        jQuery.post(ajaxurl, _data, function (response) {
+            table.append(response);
+            doimportexistingall();
+        });
+    });
+    var importexistingall = false;
+    function doimportexistingall(){
+        if(importexistingall){
+            $('.existing-content .import-table-item:not(.cancelled)').first().find('.import-existing-resource').trigger('click');
+        }
+        $('.import-all-total').text($('.existing-content .import-table-item:not(.cancelled), .existing-content .import-table-item.imported').length);
+        $('.import-all-completed').text($('.existing-content .import-table-item.imported').length);
+    }
+    doimportexistingall();
+    $('body').on('click', '.import-existing-all', function(){
+        importexistingall = true;
+        $(this).val('STOP').addClass('stop-import-existing').removeClass('import-existing-all');
+        doimportexistingall();
+    });
+    $('body').on('click', '.stop-import-existing', function(){
+        importexistingall = false;
+        $(this).val('IMPORT ALL').removeClass('stop-import-existing').addClass('import-existing-all');
+    });
+
+    // import new resources
+    $('.import-new-resource').click(function(){
+        var form = $(this).parent().parent().parent().parent().parent('form');
+        var location = $(this).parent();
+        var _tr = $(this).parent().parent();
+        var ajaxurl = 'https://mamdevsite.com/mam-lb/wp-admin/admin-ajax.php';
+        var _data = form.serialize();
+        _tr.addClass('cancelled').addClass('imported');
+        jQuery.post(ajaxurl, _data, function (response) {
+            location.append(response);
+            doimportnewall();
+        });
+    });
+
+
+    var importnewall = false;
+    function doimportnewall(){
+        if(importnewall){
+            $('.new-content tr:not(.cancelled) .import-new-resource').first().trigger('click');
+        }
+        $('.import-all-new-total').text($('.new-content tbody tr:not(.cancelled), .new-content tbody tr.imported').length);
+        $('.import-all-new-completed').text($('.new-content tbody tr.imported').length);
+    }
+    doimportnewall();
+    $('body').on('click', '.import-new-all', function(){
+        importnewall = true;
+        $(this).val('STOP').addClass('stop-import-new').removeClass('import-new-all');
+        doimportnewall();
+    });
+    $('body').on('click', '.stop-import-new', function(){
+        importnewall = false;
+        $(this).val('IMPORT ALL').removeClass('stop-import-new').addClass('import-new-all');
+    });
+
+    // import existing order
+    $('.import-existing-order').click(function(){
+        var form = $(this).parent('form');
+        var table = form.parent('div');
+        var ajaxurl = 'https://mamdevsite.com/mam-lb/wp-admin/admin-ajax.php';
+        var _data = form.serialize();
+        table.addClass('cancelled').addClass('imported');
+        jQuery.post(ajaxurl, _data, function (response) {
+            table.append(response);
+            doimportexistingorderall();
+        });
+    });
+
+    var importexistingorderall = false;
+    function doimportexistingorderall(){
+        if(importexistingorderall){
+            $('.existing-order-content .import-table-item:not(.cancelled)').find('.import-existing-order').first().trigger('click');
+            console.log('importing existing orders.');
+            console.log($('.existing-order-content .import-table-item:not(.cancelled)').find('.import-existing-order').first().text());
+        }
+        $('.import-all-existing-order-total').text($('.existing-order-content .import-table-item:not(.cancelled), .existing-order-content .import-table-item.imported').length);
+        $('.import-all-existing-order-completed').text($('.existing-order-content .import-table-item.imported').length);
+    }
+    doimportexistingorderall();
+
+    $('body').on('click', '.import-existing-order-all', function(){
+        importexistingorderall = true;
+        $(this).val('STOP').addClass('stop-import-existing-order').removeClass('import-existing-order-all');
+        doimportexistingorderall();
+    });
+    $('body').on('click', '.stop-import-existing-order', function(){
+        importexistingorderall = false;
+        $(this).val('IMPORT ALL').removeClass('stop-import-existing-order').addClass('import-existing-order-all');
+    });
+
+
+    // import new order
+    $('.import-new-order').click(function(){
+        var form = $(this).parent().parent().parent().parent().parent('form');
+        var location = $(this).parent();
+        var _tr = $(this).parent().parent();
+        var ajaxurl = 'https://mamdevsite.com/mam-lb/wp-admin/admin-ajax.php';
+        var _data = form.serialize();
+        _tr.addClass('cancelled').addClass('imported');
+        jQuery.post(ajaxurl, _data, function (response) {
+            location.append(response);
+            doimportneworderall();
+        });
+    });
+    var importneworderall = false;
+    function doimportneworderall(){
+        if(importneworderall){
+            $('.new-order-content tr:not(.cancelled) .import-new-order').first().trigger('click');
+        }
+        $('.import-all-new-order-total').text($('.new-order-content tbody tr:not(.cancelled), .new-order-content tbody tr.imported').length);
+        $('.import-all-new-order-completed').text($('.new-order-content tbody tr.imported').length);
+    }
+    doimportneworderall();
+    $('body').on('click', '.import-new-order-all', function(){
+        importneworderall = true;
+        $(this).val('STOP').addClass('stop-import-new-order').removeClass('import-new-order-all');
+        doimportneworderall();
+    });
+    $('body').on('click', '.stop-import-new-order', function(){
+        importneworderall = false;
+        $(this).val('IMPORT ALL').removeClass('stop-import-new-order').addClass('import-new-order-all');
+    });
+
+    // import existing and new accordions
+    $('h2.existing-h1').click(function(){
+        $('.existing-content').toggleClass('active');
+        $('.new-content').removeClass('active');
+        $('.new-order-content').removeClass('active');
+        $('.existing-order-content').removeClass('active');
+    });
+    $('h2.new-h1').click(function(){
+        $('.new-content').toggleClass('active');
+        $('.existing-content').removeClass('active');
+        $('.new-order-content').removeClass('active');
+        $('.existing-order-content').removeClass('active');
+    });
+    $('h2.existing-order-h1').click(function(){
+        $('.existing-order-content').toggleClass('active');
+        $('.existing-content').removeClass('active');
+        $('.new-content').removeClass('active');
+        $('.new-order-content').removeClass('active');
+    });
+    $('h2.new-order-h1').click(function(){
+        $('.new-order-content').toggleClass('active');
+        $('.existing-content').removeClass('active');
+        $('.new-content').removeClass('active');
+        $('.existing-order-content').removeClass('active');
+    });
+
+    // Cancel import click
+    $('.import-table-item .cancel').click(function(){
+        var target = $(this).attr('data-target');
+        $('[data-name="' + target + '"]').addClass('cancelled');
+        doimportexistingall();
+        doimportexistingorderall();
+        doimportnewall();
+        doimportneworderall();
+    });
+
+    // UNDO import click
+    $('.import-table-item .undo').click(function(){
+        var target = $(this).attr('data-target');
+        $('[data-name="' + target + '"]').removeClass('cancelled');
+        doimportexistingall();
+        doimportexistingorderall();
+        doimportnewall();
+        doimportneworderall();
+    })
+
     // Data Table
     $('.datatable tfoot th').each(function () {
         var title = $(this).text();
@@ -76,13 +255,15 @@ jQuery(document).ready(function ($) {
     });
 
     // Columns sorting
-    $("#sortable2").sortable().disableSelection().on("sortstop", function () {
+    $("#sortable2").sortable().disableSelection();
+    $("#sortable2").on("sortstop", function (event, ui) {
         let sortableValuesA = [];
-        $('#sortable2 li').each(function () {
+        $('#sortable2 li').each(function (index) {
             sortableValuesA.push($(this).attr('data-value'));
         });
         $('input[name="resource-order"]').val(JSON.stringify(sortableValuesA));
-    }).trigger('sortstop');
+    });
+    $("#sortable2").trigger('sortstop');
 
     // reset columns
     $('.columns-form button[type="reset"]').click(function (event) {
@@ -92,16 +273,20 @@ jQuery(document).ready(function ($) {
     });
 
     // Columns list
-    $('#columnsList').on('changed.bs.select', function () {
+    $('#columnsList').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
         var _val = ($(this).val());
         if (Array.isArray(_val)) {
             var html = '';
             $.each(_val, function (index, value) {
                 html = html + '<li class="ui-state-default" data-value="' + value + '">' + value + '</li>';
             });
-            $("#sortable2").html(html).sortable("refresh").trigger('sortstop');
+            $("#sortable2").html(html);
+            $("#sortable2").sortable("refresh");
+            $("#sortable2").trigger('sortstop');
         } else {
-            $("#sortable2").html('').sortable("refresh").trigger('sortstop');
+            $("#sortable2").html('');
+            $("#sortable2").sortable("refresh");
+            $("#sortable2").trigger('sortstop');
         }
     });
 
@@ -113,7 +298,8 @@ jQuery(document).ready(function ($) {
         $("#price").val('0 - 3000');
         $("#rd").val('0');
         $("#tr").val('0');
-        $("#sectors").val('').selectpicker("refresh");
+        $("#sectors").val('');
+        $("#sectors").selectpicker("refresh");
 
         $('.filters').submit();
     });
@@ -123,17 +309,20 @@ jQuery(document).ready(function ($) {
         $(this).parent().parent().addClass('fullscreen');
         $('.fullscreen').fullScreen(true)
         return false;
-    }).on('click', '.existfullscreen', function () {
+    });
+    $('body').on('click', '.existfullscreen', function () {
         $(this).parent().parent().removeClass('fullscreen');
         $(document).fullScreen(false);
         return false;
-    }).on('click', 'table.dataTable tbody th, table.dataTable tbody td', function () {
+    });
+
+    // Table view elipssies elemnts
+    $('body').on('click', 'table.dataTable tbody th, table.dataTable tbody td', function () {
         $(this).toggleClass('active');
     });
 
     // Range Slider jQuery UI
-    // noinspection JSJQueryEfficiency
-    if ($('#daSlider').length > 0) {
+    if ($('#daSlider').length) {
         $('#daSlider').slider({
             range: true,
             min: 0,
@@ -144,8 +333,7 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-    // noinspection JSJQueryEfficiency
-    if ($('#drSlider').length > 0) {
+    if ($('#drSlider').length) {
         $('#drSlider').slider({
             range: true,
             min: 0,
@@ -156,8 +344,7 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-    // noinspection JSJQueryEfficiency
-    if ($('#priceSlider').length > 0) {
+    if ($('#priceSlider').length) {
         $('#priceSlider').slider({
             range: true,
             min: 0,
@@ -168,8 +355,7 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-    // noinspection JSJQueryEfficiency
-    if ($('#rdSlider').length > 0) {
+    if ($('#rdSlider').length) {
         $('#rdSlider').slider({
             range: "max",
             min: 0,
@@ -180,8 +366,7 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-    // noinspection JSJQueryEfficiency
-    if ($('#trSlider').length > 0) {
+    if ($('#trSlider').length) {
         $('#trSlider').slider({
             range: "max",
             min: 0,
