@@ -72,6 +72,25 @@ function mam_get_filters_from_table($filters, $resource_columns){
             $_filters['search'][] = $item;
         }
     }
+    // remove unset elements
+    if($_filters['da'] == '0 - 100'){
+        unset($_filters['da']);
+    }
+    if($_filters['dr'] == '0 - 100'){
+        unset($_filters['dr']);
+    }
+    if($_filters['price'] == '0 - 3000'){
+        unset($_filters['price']);
+    }
+    if($_filters['website'] == ''){
+        unset($_filters['website']);
+    }
+    if($_filters['rd'] == '0'){
+        unset($_filters['rd']);
+    }
+    if($_filters['tr'] == '0'){
+        unset($_filters['tr']);
+    }
     return $_filters;
 }
 
@@ -104,13 +123,13 @@ if( $the_query->have_posts() ){
     while ( $the_query->have_posts() ) {
         $the_query->the_post();
         $id = get_the_ID();
-        if(isset($filters['website'])){
+        if(isset($filters['website']) && $filters['website']){
             if(Resources::check_used_resource(get_the_title($id), $filters['website'])){
                 continue;
             }
         }
         if(Resources::get_status($id) == 'Do Not Use'){
-            continue;
+            //continue;
         }
         $itemData = array(
             'Website' => '<a data-type="iframe" href="'. get_the_permalink($id).'" target="_blank" data-fancybox>'. get_the_title($id).'</a>',
